@@ -1,3 +1,16 @@
 {
-  "_note": "حزم خادم JavaScript: Express وpg وbcrypt وjsonwebtoken وأوامر تشغيل Node والاختبار؛ تثبيت الإصدارات عند التنفيذ. المسؤول: الفريق."
+  "name": "tripnest-server",
+  "private": true,
+  "_note": "حزم خادم JavaScript: Express وpg وbcrypt وjsonwebtoken وأوامر تشغيل Node والاختبار؛ تثبيت الإصدارات عند التنفيذ. المسؤول: الفريق.",
+  "type": "commonjs",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "db:setup": "node database/setup.js"
+  },
+  "dependencies": {
+    "express": "4.21.2",
+    "pg": "8.13.1"
+  }
 }
