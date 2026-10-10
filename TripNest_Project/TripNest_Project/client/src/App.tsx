@@ -87,7 +87,7 @@ function Workspace({ user, trips }: { user: AccountUser | null; trips: Trip[] })
     window.location.assign('/auth');
   }
   if (!accountActive) return <Auth />;
-  const tripReady = !user || !!getAccountTripId();
+  const tripReady = !!getAccountTripId();
   return (
     <>
       <header className="app-bar">
@@ -160,7 +160,7 @@ function Workspace({ user, trips }: { user: AccountUser | null; trips: Trip[] })
         </div>
       </header>
 
-      {user && (
+      {(user || isDemoWorkspace()) && (
         <div className="account-trip-bar">
           <label>
             Active trip{' '}

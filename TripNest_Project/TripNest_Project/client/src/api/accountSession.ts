@@ -3,9 +3,11 @@ import type { AccountUser } from '../../../shared/types';
 const KEY = 'tripnest.account-session.v1';
 type SavedSession = { token: string; tripId?: string; expiresAt: string };
 let saved: SavedSession | null = null;
+let demoTripId: string | undefined;
 let mode = import.meta.env.DEV ? 'demo' : 'signed-out';
 try {
   mode = sessionStorage.getItem('tripnest.account-mode') || mode;
+  demoTripId = sessionStorage.getItem('tripnest.demo-trip') || undefined;
   const raw = sessionStorage.getItem(KEY);
   if (raw) {
     const value = JSON.parse(raw) as Partial<SavedSession>;
@@ -29,7 +31,8 @@ try {
 }
 
 export const getAccountToken = () => saved?.token || '';
-export const getAccountTripId = () => saved?.tripId;
+export const getAccountTripId = () =>
+  saved?.tripId ?? (isDemoWorkspace() ? demoTripId : undefined);
 export const isDemoWorkspace = () => !saved && mode === 'demo' && import.meta.env.DEV;
 export const hasAccount = () => !!saved;
 
@@ -44,7 +47,14 @@ export function saveAccountSession(result: {
   sessionStorage.setItem('tripnest.account-mode', mode);
 }
 export function setAccountTrip(id: string | undefined) {
-  if (!saved) return;
+  if (!saved) {
+    if (isDemoWorkspace()) {
+      demoTripId = id;
+      if (id) sessionStorage.setItem('tripnest.demo-trip', id);
+      else sessionStorage.removeItem('tripnest.demo-trip');
+    }
+    return;
+  }
   saved.tripId = id;
   sessionStorage.setItem(KEY, JSON.stringify(saved));
 }

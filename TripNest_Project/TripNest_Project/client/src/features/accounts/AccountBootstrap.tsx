@@ -5,8 +5,10 @@ import {
   getAccountTripId,
   setAccountTrip,
   clearAccountSession,
+  isDemoWorkspace,
 } from '../../api/accountSession';
 import { ApiError } from '../../api';
+import { getFinanceSession } from '../../api/financeSession';
 import { store } from '../../store';
 import { loadServerBudget } from '../../store/budgetSlice';
 import { setBudgetSource } from '../../store/financeUiSlice';
@@ -21,30 +23,38 @@ export default function AccountBootstrap({
     user: AccountUser | null;
     trips: Trip[];
     error: string;
-  }>({ busy: !!getAccountToken(), user: null, trips: [], error: '' });
+  }>({
+    busy: !!getAccountToken() || isDemoWorkspace(),
+    user: null,
+    trips: [],
+    error: '',
+  });
   const [retry, setRetry] = useState(0);
   useEffect(() => {
-    if (!getAccountToken()) return;
+    if (!getAccountToken() && !isDemoWorkspace()) return;
     let active = true;
     setState((s) => ({ ...s, busy: true, error: '' }));
     void (async () => {
       try {
-        const { user } = await authApi.me();
+        const { user } = getAccountToken() ? await authApi.me() : { user: null };
+        const preferredTripId =
+          getAccountTripId() || (await getFinanceSession('traveler')).tripId;
         const { trips } = await tripsApi.list();
         if (!active) return;
         const activeTrips = trips.filter((t) => t.status === 'active');
         const selected =
-          activeTrips.find((t) => t.id === getAccountTripId()) || activeTrips[0];
+          activeTrips.find((t) => t.id === preferredTripId) || activeTrips[0];
         setAccountTrip(selected?.id);
-        store.dispatch(
-          loadServerBudget({
-            budgetInCents: 0,
-            reserveInCents: 0,
-            expenses: [],
-            bookings: [],
-          }),
-        );
-        store.dispatch(setBudgetSource('database'));
+        if (user)
+          store.dispatch(
+            loadServerBudget({
+              budgetInCents: 0,
+              reserveInCents: 0,
+              expenses: [],
+              bookings: [],
+            }),
+          );
+        if (user) store.dispatch(setBudgetSource('database'));
         setState({ busy: false, user, trips: activeTrips, error: '' });
       } catch (e) {
         if (!active) return;
@@ -91,7 +101,7 @@ export default function AccountBootstrap({
   if (state.busy)
     return (
       <main className="account-workspace">
-        <p role="status">Opening your account…</p>
+        <p role="status">Opening your travel workspace…</p>
       </main>
     );
   if (state.error)

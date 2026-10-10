@@ -22,7 +22,10 @@ export async function getFinanceSession(role: FinanceRole): Promise<FinanceSessi
     throw new Error(
       'Local session unavailable. Start the database and API, and run database setup.',
     );
-  return response.json();
+  const session: FinanceSession = await response.json();
+  return role === 'traveler'
+    ? { ...session, tripId: getAccountTripId() || session.tripId }
+    : session;
 }
 
 // #explain_notes: Read the current login token on each request; a production logout blocks further calls.
