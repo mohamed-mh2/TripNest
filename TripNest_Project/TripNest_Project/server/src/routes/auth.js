@@ -1,1 +1,11 @@
-// مسارات Express وطرق REST والتحقق من المدخلات واستدعاء وسيط المصادقة ثم controller الخاص بـ التسجيل والدخول وbcrypt وJWT وصلاحيات الحسابات. المسؤول: madin abed.
+const express = require('express');
+const controller = require('../controllers/auth');
+const { authenticate } = require('../middleware/auth');
+
+const router = express.Router();
+router.post('/register', controller.register);
+router.post('/login', controller.login);
+router.get('/me', authenticate, controller.me);
+router.post('/logout', authenticate, controller.logout);
+
+module.exports = router;

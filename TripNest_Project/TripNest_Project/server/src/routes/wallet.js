@@ -1,1 +1,11 @@
-// مسارات Express وطرق REST والتحقق من المدخلات واستدعاء وسيط المصادقة ثم controller الخاص بـ الميزانية والمصاريف والمحفظة التجريبية وطلبات دعم الأهل ومعاملات الرصيد دون تكرار؛ المحفظة منفصلة عن تكلفة الحجوزات. المسؤول: mohamed mhamed.
+const express = require('express');
+const controller = require('../controllers/wallet');
+const { authenticate, requireRole } = require('../middleware/auth');
+const router = express.Router();
+router.use(authenticate);
+router.get('/', controller.get);
+router.post('/transactions', controller.transact);
+router.get('/family-support', controller.requests);
+router.post('/family-support', controller.requestSupport);
+router.patch('/family-support/:id', requireRole('admin'), controller.decide);
+module.exports = router;

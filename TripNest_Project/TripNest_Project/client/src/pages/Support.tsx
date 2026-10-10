@@ -1,1 +1,26 @@
-// طلبات المساعدة ومعالجتها من المسؤول وتصدير ملخص الرحلة. المسؤول: mohamed fody.
+import {useEffect,useRef,useState,type FormEvent} from 'react';
+import {useDispatch,useSelector} from 'react-redux';
+import {ApiError,supportApi,tripsApi} from '../api';
+import {setChecklist,setTickets} from '../store/supportSlice';
+import type {AppDispatch,RootState} from '../store';
+import {selectTrip,tripsFailed,tripsLoaded,tripsLoading} from '../store/tripsSlice';
+export default function Support(){
+ const dispatch=useDispatch<AppDispatch>();const {checklist,checklistTripId,tickets}=useSelector((s:RootState)=>s.support);const user=useSelector((s:RootState)=>s.session.user);
+ const {trips,selectedTripId}=useSelector((s:RootState)=>s.trips);const tripId=selectedTripId||'';const tripIdRef=useRef(tripId);tripIdRef.current=tripId;
+ const [label,setLabel]=useState('');const [subject,setSubject]=useState('');const [message,setMessage]=useState('');const [error,setError]=useState('');
+ async function loadTickets(){try{dispatch(setTickets((await supportApi.tickets()).tickets));}catch(e){setError(e instanceof ApiError?e.message:'Could not load help requests.');}}
+ async function loadChecklist(id:string){if(!id){if(!tripIdRef.current)dispatch(setChecklist({tripId:null,items:[]}));return;}try{const result=await supportApi.checklist(id);if(tripIdRef.current===id)dispatch(setChecklist({tripId:id,items:result.items}));}catch(e){if(tripIdRef.current===id)setError(e instanceof ApiError?e.message:'Could not load checklist.');}}
+ useEffect(()=>{dispatch(tripsLoading());void tripsApi.list().then(({trips:t})=>dispatch(tripsLoaded(t))).catch(e=>{const message=e instanceof ApiError?e.message:'Could not load trips.';dispatch(tripsFailed(message));setError(message);});void loadTickets();},[dispatch]);
+ useEffect(()=>{void loadChecklist(tripId);},[tripId]);
+ async function addItem(e:FormEvent){e.preventDefault();try{await supportApi.addChecklist(tripId,label);setLabel('');await loadChecklist(tripId);}catch(err){setError(err instanceof ApiError?err.message:'Could not add item.');}}
+ async function toggle(id:string,checked:boolean){try{await supportApi.updateChecklist(id,checked);await loadChecklist(tripId);}catch(err){setError(err instanceof ApiError?err.message:'Could not update item.');}}
+ async function createTicket(e:FormEvent){e.preventDefault();try{await supportApi.createTicket({tripId:tripId||undefined,subject,message});setSubject('');setMessage('');await loadTickets();}catch(err){setError(err instanceof ApiError?err.message:'Could not send request.');}}
+ async function resolve(id:string){try{await supportApi.resolveTicket(id);await loadTickets();}catch(err){setError(err instanceof ApiError?err.message:'Could not resolve request.');}}
+ async function exportSummary(){try{const data=await supportApi.summary(tripId);const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='trip-summary.json';a.click();URL.revokeObjectURL(url);}catch(err){setError(err instanceof ApiError?err.message:'Could not export summary.');}}
+ return <main className="page-shell"><header className="page-heading"><div><p className="eyebrow">TRAVEL PREPARATION</p><h1>Checklist & support</h1></div></header>{error&&<p className="form-error" role="alert">{error}</p>}
+ <section className="panel"><div className="section-title"><h2>Trip readiness</h2><select value={tripId} onChange={e=>dispatch(selectTrip(e.target.value||null))}><option value="">Choose a trip</option>{trips.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></div>
+ {tripId&&<><form className="inline-form" onSubmit={addItem}><input aria-label="Checklist item" required minLength={2} maxLength={180} value={label} onChange={e=>setLabel(e.target.value)} placeholder="Add a preparation item"/><button className="primary-button">Add</button><button type="button" className="secondary-button" onClick={()=>void exportSummary()}>Export trip summary</button></form>
+ <div className="checklist">{(checklistTripId===tripId?checklist:[]).map(item=><label key={item.id} className="check-item"><input type="checkbox" checked={item.isComplete} onChange={e=>void toggle(item.id,e.target.checked)}/><span className={item.isComplete?'completed':''}>{item.label}</span></label>)}{checklistTripId===tripId&&!checklist.length&&<p className="empty-state">No checklist items yet.</p>}</div></>}</section>
+ <section className="panel section-gap"><h2>Ask for help</h2><form className="trip-form" onSubmit={createTicket}><label>Subject<input required minLength={3} maxLength={180} value={subject} onChange={e=>setSubject(e.target.value)}/></label><label className="wide-field">Message<textarea required minLength={5} maxLength={10000} value={message} onChange={e=>setMessage(e.target.value)}/></label><div className="form-actions"><button className="primary-button">Send request</button></div></form></section>
+ <section className="panel section-gap"><h2>Help requests</h2>{tickets.map(t=><article className="ticket-row" key={t.id}><div><p className="eyebrow">{t.userName||'You'} · {t.status}</p><h3>{t.subject}</h3><p>{t.message}</p></div>{user?.role==='admin'&&t.status==='open'&&<button className="secondary-button" onClick={()=>void resolve(t.id)}>Mark resolved</button>}</article>)}{!tickets.length&&<p className="empty-state">No help requests.</p>}</section></main>;
+}

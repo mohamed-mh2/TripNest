@@ -1,1 +1,13 @@
-// مسارات Express وطرق REST والتحقق من المدخلات واستدعاء وسيط المصادقة ثم controller الخاص بـ قائمة الاستعداد وتصدير ملخص الرحلة وطلبات المساعدة ومعالجتها من المسؤول؛ خصائص eSIM والفعاليات تستخدم محرك الحجز المشترك. المسؤول: mohamed fody.
+const express=require('express');
+const controller=require('../controllers/support');
+const {authenticate,requireRole}=require('../middleware/auth');
+const router=express.Router();
+router.use(authenticate);
+router.get('/trips/:tripId/checklist',controller.listChecklist);
+router.post('/trips/:tripId/checklist',controller.addChecklist);
+router.patch('/checklist/:id',controller.updateChecklist);
+router.get('/trips/:tripId/summary',controller.summary);
+router.get('/tickets',controller.listTickets);
+router.post('/tickets',controller.createTicket);
+router.patch('/tickets/:id/resolve',requireRole('admin'),controller.resolve);
+module.exports=router;

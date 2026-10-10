@@ -1,1 +1,14 @@
-// مسارات Express وطرق REST والتحقق من المدخلات واستدعاء وسيط المصادقة ثم controller الخاص بـ كتالوج الخدمات السبعة وإدارة العروض وعرض السعر والحجز والإلغاء التجريبي ومنع التكرار. المسؤول: abed alrahman.
+const express=require('express');
+const controller=require('../controllers/bookings');
+const {authenticate,requireRole}=require('../middleware/auth');
+const router=express.Router();
+router.get('/services',controller.services);
+router.get('/offers',controller.offers);
+router.get('/offers/:id/quote',controller.quote);
+router.post('/offers',authenticate,requireRole('admin'),controller.createOffer);
+router.patch('/offers/:id',authenticate,requireRole('admin'),controller.updateOffer);
+router.use(authenticate);
+router.get('/',controller.list);
+router.post('/',controller.create);
+router.delete('/:id',controller.cancel);
+module.exports=router;

@@ -1,3 +1,9 @@
 {
-  "_note": "إعداد TypeScript الصارم للواجهة فقط؛ يمنع استخدام any في كود التطبيق. المسؤول: الفريق."
+  "compilerOptions": {
+    "target": "ES2020", "useDefineForClassFields": true, "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext", "skipLibCheck": true, "moduleResolution": "Bundler", "allowImportingTsExtensions": true,
+    "resolveJsonModule": true, "isolatedModules": true, "noEmit": true, "jsx": "react-jsx",
+    "strict": true, "noUnusedLocals": true, "noUnusedParameters": true
+  },
+  "include": ["src"]
 }
