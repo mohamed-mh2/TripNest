@@ -9,7 +9,6 @@ class HttpError extends Error {
   }
 }
 
-
 // #explain_notes: Express 4 does not catch rejected promises, so async handlers are wrapped.
 function asyncHandler(handler) {
   return (req, res, next) => {
@@ -17,8 +16,4 @@ function asyncHandler(handler) {
   };
 }
 
-
-module.exports = {
-  HttpError,
-  asyncHandler,
-};
+export { HttpError, asyncHandler };

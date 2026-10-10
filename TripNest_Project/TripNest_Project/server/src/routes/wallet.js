@@ -1,1 +1,13 @@
-// مسارات Express وطرق REST والتحقق من المدخلات واستدعاء وسيط المصادقة ثم controller الخاص بـ الميزانية والمصاريف والمحفظة التجريبية وطلبات دعم الأهل ومعاملات الرصيد دون تكرار؛ المحفظة منفصلة عن تكلفة الحجوزات. المسؤول: mohamed mhamed.
+import { Router } from 'express';
+import { createWalletModel } from '../models/wallet.js';
+import { createWalletController } from '../controllers/wallet.js';
+
+export function walletRoutes(db) {
+  const router = Router(),
+    controller = createWalletController(createWalletModel(db));
+
+  router.get('/wallet', controller.read);
+
+  router.post('/wallet/topups', controller.topup);
+  return router;
+}

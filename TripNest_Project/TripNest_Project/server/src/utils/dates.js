@@ -1,7 +1,11 @@
 // Calendar date helpers. Dates are 'YYYY-MM-DD' strings and times are treated as UTC. المسؤول: abed alrahman.
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+import pg from 'pg';
 
+// #explain_notes: Preserve DATE as a calendar string in production and integration tests.
+pg.types.setTypeParser(1082, (value) => value);
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 // #explain_notes: pg returns DATE as a string, while pg-mem returns a Date object; both become 'YYYY-MM-DD'.
 function toDateString(value) {
@@ -16,7 +20,6 @@ function toDateString(value) {
   return String(value).slice(0, 10);
 }
 
-
 function isValidDateString(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return false;
@@ -27,11 +30,9 @@ function isValidDateString(value) {
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 }
 
-
 function todayString(now = new Date()) {
   return now.toISOString().slice(0, 10);
 }
-
 
 function addDays(dateString, days) {
   const date = new Date(`${dateString}T00:00:00Z`);
@@ -40,11 +41,11 @@ function addDays(dateString, days) {
   return date.toISOString().slice(0, 10);
 }
 
-
 function daysBetween(startDate, endDate) {
-  return Math.round((Date.parse(`${endDate}T00:00:00Z`) - Date.parse(`${startDate}T00:00:00Z`)) / DAY_MS);
+  return Math.round(
+    (Date.parse(`${endDate}T00:00:00Z`) - Date.parse(`${startDate}T00:00:00Z`)) / DAY_MS,
+  );
 }
-
 
 function combineDateAndTime(dateString, time) {
   const safeTime = /^\d{2}:\d{2}$/.test(time || '') ? time : '00:00';
@@ -52,8 +53,7 @@ function combineDateAndTime(dateString, time) {
   return new Date(`${dateString}T${safeTime}:00Z`);
 }
 
-
-module.exports = {
+export {
   toDateString,
   isValidDateString,
   todayString,

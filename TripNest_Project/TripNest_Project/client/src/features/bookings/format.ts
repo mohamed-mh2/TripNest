@@ -1,9 +1,10 @@
 // Display helpers for money (minor units), dates, and durations. المسؤول: abed alrahman.
 
 export function formatMoney(amountMinor: number, currency: string): string {
-  return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(amountMinor / 100);
+  return new Intl.NumberFormat('en-GB', { style: 'currency', currency }).format(
+    amountMinor / 100,
+  );
 }
-
 
 // #explain_notes: Dates are plain 'YYYY-MM-DD' values; formatting in UTC avoids shifting the day.
 export function formatDate(dateString: string): string {
@@ -16,7 +17,6 @@ export function formatDate(dateString: string): string {
   }).format(new Date(`${dateString}T00:00:00Z`));
 }
 
-
 export function formatDateTime(isoString: string): string {
   return new Intl.DateTimeFormat('en-GB', {
     day: 'numeric',
@@ -27,7 +27,6 @@ export function formatDateTime(isoString: string): string {
     timeZone: 'UTC',
   }).format(new Date(isoString));
 }
-
 
 export function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60);
@@ -40,14 +39,12 @@ export function formatDuration(minutes: number): string {
   return rest === 0 ? `${hours} h` : `${hours} h ${rest} min`;
 }
 
-
 export function addDays(dateString: string, days: number): string {
   const date = new Date(`${dateString}T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() + days);
 
   return date.toISOString().slice(0, 10);
 }
-
 
 export function pluralize(count: number, word: string): string {
   return `${count} ${word}${count === 1 ? '' : 's'}`;

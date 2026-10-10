@@ -1,16 +1,24 @@
 {
   "name": "tripnest-server",
+  "version": "0.1.0",
   "private": true,
-  "_note": "حزم خادم JavaScript: Express وpg وbcrypt وjsonwebtoken وأوامر تشغيل Node والاختبار؛ تثبيت الإصدارات عند التنفيذ. المسؤول: الفريق.",
-  "type": "commonjs",
-  "main": "src/app.js",
+  "type": "module",
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js",
-    "db:setup": "node database/setup.js"
+    "dev": "node --watch --env-file-if-exists=.env src/index.js",
+    "start": "node --env-file-if-exists=.env src/index.js",
+    "test": "node --test tests/*.test.js",
+    "db:start": "node scripts/start-db.js",
+    "db:setup": "node --env-file=.env scripts/setup-db.js",
+    "db:migrate": "node --env-file=.env scripts/migrate-finance.js",
+    "db:bookings": "node --env-file=.env scripts/migrate-bookings.js"
   },
   "dependencies": {
-    "express": "4.21.2",
-    "pg": "8.13.1"
+    "express": "5.2.1",
+    "jsonwebtoken": "9.0.3",
+    "pg": "8.23.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "supertest": "7.3.0"
   }
 }

@@ -9,7 +9,12 @@ import { cancelBooking, fetchBooking, fetchTripBookingSummary } from '../api/boo
 import { useAppDispatch, useAppSelector } from '../store';
 import { bookingSaved, loadMyBookings } from '../store/bookingsSlice';
 import { categoryInfo } from '../features/bookings/categories';
-import { formatDate, formatDateTime, formatMoney, pluralize } from '../features/bookings/format';
+import {
+  formatDate,
+  formatDateTime,
+  formatMoney,
+  pluralize,
+} from '../features/bookings/format';
 import { PolicyBox, PriceSummary } from '../features/bookings/components/PriceSummary';
 import { DemoNotice, StatusMessage } from '../features/bookings/components/StatusMessage';
 import type {
@@ -20,15 +25,15 @@ import type {
 } from '../../../shared/types';
 import '../features/bookings/bookings.css';
 
-
 // ---------- Shared pieces ----------
 
 function StatusBadge({ status }: { status: BookingStatus }) {
-  return status === 'confirmed'
-    ? <span className="badge badge--good">Confirmed (demo)</span>
-    : <span className="badge badge--muted">Cancelled</span>;
+  return status === 'confirmed' ? (
+    <span className="badge badge--good">Confirmed (demo)</span>
+  ) : (
+    <span className="badge badge--muted">Cancelled</span>
+  );
 }
-
 
 function bookingWhen(booking: Booking): string {
   if (booking.category === 'hotel') {
@@ -38,7 +43,6 @@ function bookingWhen(booking: Booking): string {
 
   return formatDate(booking.startDate);
 }
-
 
 function bookingParty(booking: Booking): string {
   switch (booking.category) {
@@ -55,23 +59,21 @@ function bookingParty(booking: Booking): string {
   }
 }
 
-
 function SignInRequired() {
   return (
     <section className="page">
       <StatusMessage tone="info" title="Sign in to see your bookings">
-        Choose a demo customer in the header.
+        Open the saved demo trip. Real sign-in will be connected by the accounts team.
       </StatusMessage>
     </section>
   );
 }
 
-
 // ---------- Trip booking cost (shared with the cost planner) ----------
 
 // #explain_notes: Shows the same net figure the cost planner uses: total booked minus refunds.
 // It reloads whenever planRevision changes (after a booking or a cancellation).
-function TripCostSummary({ tripId }: { tripId: number }) {
+function TripCostSummary({ tripId }: { tripId: string }) {
   const planRevision = useAppSelector((state) => state.bookings.planRevision);
   const [summary, setSummary] = useState<TripBookingSummary | null>(null);
   const [failed, setFailed] = useState(false);
@@ -119,11 +121,13 @@ function TripCostSummary({ tripId }: { tripId: number }) {
         <span className="cost-summary__label">Net booking cost</span>
         <strong>{formatMoney(summary.netMinor, summary.currency)}</strong>
       </div>
-      <p className="muted small">Used by the trip cost planner. Bookings are counted once and are not added as extra expenses.</p>
+      <p className="muted small">
+        Used by the trip cost planner. Bookings are counted once and are not added as
+        extra expenses.
+      </p>
     </div>
   );
 }
-
 
 // ---------- My Bookings ----------
 
@@ -133,13 +137,14 @@ const STATUS_TABS: Array<{ id: BookingStatus | null; label: string }> = [
   { id: 'cancelled', label: 'Cancelled' },
 ];
 
-
 function BookingRow({ booking }: { booking: Booking }) {
   const info = categoryInfo(booking.category);
 
   return (
     <article className="booking-row">
-      <div className="booking-row__icon" aria-hidden="true">{info.icon}</div>
+      <div className="booking-row__icon" aria-hidden="true">
+        {info.icon}
+      </div>
       <div className="booking-row__main">
         <h3>{booking.serviceName}</h3>
         <p className="muted">
@@ -153,20 +158,25 @@ function BookingRow({ booking }: { booking: Booking }) {
         <StatusBadge status={booking.status} />
         <strong>{formatMoney(booking.totalMinor, booking.currency)}</strong>
         {booking.refundedMinor > 0 && (
-          <span className="small refund-text">Refunded {formatMoney(booking.refundedMinor, booking.currency)}</span>
+          <span className="small refund-text">
+            Refunded {formatMoney(booking.refundedMinor, booking.currency)}
+          </span>
         )}
-        <Link to={`/bookings/${booking.id}`} className="button">Details</Link>
+        <Link to={`/bookings/${booking.id}`} className="button">
+          Details
+        </Link>
       </div>
     </article>
   );
 }
 
-
 export function MyBookingsPage() {
   const dispatch = useAppDispatch();
   const { currentUserId, trips } = useAppSelector((state) => state.session);
-  const { myBookings, myBookingsStatus, myBookingsError } = useAppSelector((state) => state.bookings);
-  const [tripId, setTripId] = useState<number | null>(null);
+  const { myBookings, myBookingsStatus, myBookingsError } = useAppSelector(
+    (state) => state.bookings,
+  );
+  const [tripId, setTripId] = useState<string | null>(null);
   const [status, setStatus] = useState<BookingStatus | null>(null);
 
   useEffect(() => {
@@ -186,7 +196,9 @@ export function MyBookingsPage() {
           <h1>My Bookings</h1>
           <p className="page-header__subtitle">Demo bookings attached to your trips.</p>
         </div>
-        <Link to="/services" className="button button--primary">Book a service</Link>
+        <Link to="/services" className="button button--primary">
+          Book a service
+        </Link>
       </header>
 
       <div className="bookings-toolbar">
@@ -194,11 +206,15 @@ export function MyBookingsPage() {
           <span className="field__label">Trip</span>
           <select
             value={tripId ?? ''}
-            onChange={(event) => setTripId(event.target.value ? Number(event.target.value) : null)}
+            onChange={(event) =>
+              setTripId(event.target.value ? event.target.value : null)
+            }
           >
             <option value="">All trips</option>
             {trips.map((trip) => (
-              <option key={trip.id} value={trip.id}>{trip.title}</option>
+              <option key={trip.id} value={trip.id}>
+                {trip.title}
+              </option>
             ))}
           </select>
         </label>
@@ -210,7 +226,11 @@ export function MyBookingsPage() {
               type="button"
               role="tab"
               aria-selected={status === tab.id}
-              className={status === tab.id ? 'segmented__item segmented__item--active' : 'segmented__item'}
+              className={
+                status === tab.id
+                  ? 'segmented__item segmented__item--active'
+                  : 'segmented__item'
+              }
               onClick={() => setStatus(tab.id)}
             >
               {tab.label}
@@ -221,17 +241,25 @@ export function MyBookingsPage() {
 
       {tripId !== null && <TripCostSummary tripId={tripId} />}
 
-      {myBookingsStatus === 'loading' && <p className="muted" aria-busy="true">Loading your bookings...</p>}
+      {myBookingsStatus === 'loading' && (
+        <p className="muted" aria-busy="true">
+          Loading your bookings...
+        </p>
+      )}
 
       {myBookingsStatus === 'error' && (
         <StatusMessage
           tone="error"
           title="Could not load your bookings"
-          action={(
-            <button type="button" className="button" onClick={() => dispatch(loadMyBookings({ tripId, status }))}>
+          action={
+            <button
+              type="button"
+              className="button"
+              onClick={() => dispatch(loadMyBookings({ tripId, status }))}
+            >
               Try again
             </button>
-          )}
+          }
         >
           {myBookingsError}
         </StatusMessage>
@@ -241,9 +269,15 @@ export function MyBookingsPage() {
         <StatusMessage
           tone="empty"
           title="No bookings yet"
-          action={<Link to="/services" className="button">Browse services</Link>}
+          action={
+            <Link to="/services" className="button">
+              Browse services
+            </Link>
+          }
         >
-          {status || tripId ? 'No bookings match these filters.' : 'Your confirmed demo bookings will appear here.'}
+          {status || tripId
+            ? 'No bookings match these filters.'
+            : 'Your confirmed demo bookings will appear here.'}
         </StatusMessage>
       )}
 
@@ -258,10 +292,12 @@ export function MyBookingsPage() {
   );
 }
 
-
 // ---------- Booking details and cancellation ----------
 
-function CancellationSection({ booking, onCancelled }: {
+function CancellationSection({
+  booking,
+  onCancelled,
+}: {
   booking: Booking;
   onCancelled: (result: CancelBookingResponse) => void;
 }) {
@@ -295,37 +331,65 @@ function CancellationSection({ booking, onCancelled }: {
   if (booking.status === 'cancelled') {
     return (
       <StatusMessage tone="info" title="This booking is cancelled">
-        Cancelled on {booking.cancelledAt ? formatDateTime(booking.cancelledAt) : '-'} (UTC).
-        Refund: {formatMoney(booking.refundedMinor, booking.currency)} to the demo card (simulated).
+        Cancelled on {booking.cancelledAt ? formatDateTime(booking.cancelledAt) : '-'}{' '}
+        (UTC). Refund: {formatMoney(booking.refundedMinor, booking.currency)} to the demo
+        card (simulated).
       </StatusMessage>
     );
   }
 
   if (!preview.canCancel) {
-    return <StatusMessage tone="warning" title="Cancellation not available">{preview.reason}</StatusMessage>;
+    return (
+      <StatusMessage tone="warning" title="Cancellation not available">
+        {preview.reason}
+      </StatusMessage>
+    );
   }
 
   return (
     <div className="cancel-box">
       <h2>Cancel booking</h2>
       <p>
-        If you cancel now you will receive <strong>{formatMoney(preview.refundMinor, booking.currency)}</strong>
-        {' '}(simulated refund). {preview.reason}
+        If you cancel now you will receive{' '}
+        <strong>{formatMoney(preview.refundMinor, booking.currency)}</strong> (simulated
+        refund). {preview.reason}
       </p>
 
-      {error && <StatusMessage tone="error" title="Cancellation failed">{error}</StatusMessage>}
+      {error && (
+        <StatusMessage tone="error" title="Cancellation failed">
+          {error}
+        </StatusMessage>
+      )}
 
       {!isConfirming ? (
-        <button type="button" className="button button--danger" onClick={() => setIsConfirming(true)}>
+        <button
+          type="button"
+          className="button button--danger"
+          onClick={() => setIsConfirming(true)}
+        >
           Cancel booking
         </button>
       ) : (
         <div className="cancel-box__confirm">
-          <p><strong>Are you sure?</strong> This cannot be undone.</p>
-          <button type="button" className="button button--danger" disabled={isSubmitting} onClick={cancelNow}>
-            {isSubmitting ? 'Cancelling...' : `Yes, cancel and refund ${formatMoney(preview.refundMinor, booking.currency)}`}
+          <p>
+            <strong>Are you sure?</strong> This cannot be undone.
+          </p>
+          <button
+            type="button"
+            className="button button--danger"
+            disabled={isSubmitting}
+            onClick={cancelNow}
+          >
+            {isSubmitting
+              ? 'Cancelling...'
+              : `Yes, cancel and refund ${formatMoney(preview.refundMinor, booking.currency)}`}
           </button>
-          <button type="button" className="button button--ghost" disabled={isSubmitting} onClick={() => setIsConfirming(false)}>
+          <button
+            type="button"
+            className="button button--ghost"
+            disabled={isSubmitting}
+            onClick={() => setIsConfirming(false)}
+          >
             Keep booking
           </button>
         </div>
@@ -334,7 +398,6 @@ function CancellationSection({ booking, onCancelled }: {
   );
 }
 
-
 export function BookingDetailsPage() {
   const dispatch = useAppDispatch();
   const { bookingId } = useParams();
@@ -342,8 +405,12 @@ export function BookingDetailsPage() {
   const currentUserId = useAppSelector((state) => state.session.currentUserId);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
-  const [refundResult, setRefundResult] = useState<CancelBookingResponse['refund'] | null>(null);
-  const justBooked = Boolean((location.state as { justBooked?: boolean } | null)?.justBooked);
+  const [refundResult, setRefundResult] = useState<
+    CancelBookingResponse['refund'] | null
+  >(null);
+  const justBooked = Boolean(
+    (location.state as { justBooked?: boolean } | null)?.justBooked,
+  );
 
   useEffect(() => {
     if (currentUserId === null) {
@@ -353,7 +420,7 @@ export function BookingDetailsPage() {
     let isCurrent = true;
 
     setError(null);
-    fetchBooking(Number(bookingId))
+    fetchBooking(bookingId ?? '')
       .then((result) => {
         if (isCurrent) {
           setBooking(result.booking);
@@ -379,8 +446,14 @@ export function BookingDetailsPage() {
       <section className="page">
         <StatusMessage
           tone={error.status === 404 ? 'empty' : 'error'}
-          title={error.status === 404 ? 'Booking not found' : 'Could not load this booking'}
-          action={<Link to="/bookings" className="button">Back to My Bookings</Link>}
+          title={
+            error.status === 404 ? 'Booking not found' : 'Could not load this booking'
+          }
+          action={
+            <Link to="/bookings" className="button">
+              Back to My Bookings
+            </Link>
+          }
         >
           {error.message}
         </StatusMessage>
@@ -389,7 +462,11 @@ export function BookingDetailsPage() {
   }
 
   if (!booking) {
-    return <p className="page-message" aria-busy="true">Loading booking...</p>;
+    return (
+      <p className="page-message" aria-busy="true">
+        Loading booking...
+      </p>
+    );
   }
 
   function handleCancelled(result: CancelBookingResponse) {
@@ -403,23 +480,32 @@ export function BookingDetailsPage() {
 
   return (
     <section className="page">
-      <Link to="/bookings" className="back-link">← Back to My Bookings</Link>
+      <Link to="/bookings" className="back-link">
+        ← Back to My Bookings
+      </Link>
 
       {justBooked && booking.status === 'confirmed' && (
-        <StatusMessage tone="success" title={`Booking confirmed · Reference ${booking.reference}`}>
-          Your demo payment was approved. This is a simulated booking: no real ticket, reservation, or eSIM was issued.
+        <StatusMessage
+          tone="success"
+          title={`Booking confirmed · Reference ${booking.reference}`}
+        >
+          Your demo payment was approved. This is a simulated booking: no real ticket,
+          reservation, or eSIM was issued.
         </StatusMessage>
       )}
 
       {refundResult && (
         <StatusMessage tone="success" title="Booking cancelled">
-          Refund of {formatMoney(refundResult.amountMinor, refundResult.currency)} ({refundResult.percent}%). {refundResult.reason} {refundResult.note}
+          Refund of {formatMoney(refundResult.amountMinor, refundResult.currency)} (
+          {refundResult.percent}%). {refundResult.reason} {refundResult.note}
         </StatusMessage>
       )}
 
       <div className="details-layout">
         <div className="details-main">
-          <p className="eyebrow">{info.icon} {info.label}</p>
+          <p className="eyebrow">
+            {info.icon} {info.label}
+          </p>
           <h1>{booking.serviceName}</h1>
           <div className="service-card__badges">
             <StatusBadge status={booking.status} />
@@ -427,12 +513,32 @@ export function BookingDetailsPage() {
           </div>
 
           <dl className="details-list">
-            <div><dt>Reference</dt><dd className="mono">{booking.reference}</dd></div>
-            <div><dt>Trip</dt><dd>{booking.tripTitle}</dd></div>
-            <div><dt>When</dt><dd>{bookingWhen(booking)} · starts {formatDateTime(booking.startsAt)} (UTC)</dd></div>
-            <div><dt>Party</dt><dd>{bookingParty(booking)}</dd></div>
-            <div><dt>Booked on</dt><dd>{formatDateTime(booking.createdAt)} (UTC)</dd></div>
-            <div><dt>Payment</dt><dd>Simulated demo card · {booking.paymentReference}</dd></div>
+            <div>
+              <dt>Reference</dt>
+              <dd className="mono">{booking.reference}</dd>
+            </div>
+            <div>
+              <dt>Trip</dt>
+              <dd>{booking.tripTitle}</dd>
+            </div>
+            <div>
+              <dt>When</dt>
+              <dd>
+                {bookingWhen(booking)} · starts {formatDateTime(booking.startsAt)} (UTC)
+              </dd>
+            </div>
+            <div>
+              <dt>Party</dt>
+              <dd>{bookingParty(booking)}</dd>
+            </div>
+            <div>
+              <dt>Booked on</dt>
+              <dd>{formatDateTime(booking.createdAt)} (UTC)</dd>
+            </div>
+            <div>
+              <dt>Payment</dt>
+              <dd>Simulated demo card · {booking.paymentReference}</dd>
+            </div>
           </dl>
 
           <PolicyBox policy={booking.cancellationPolicy} />
@@ -443,14 +549,25 @@ export function BookingDetailsPage() {
         <aside className="checkout">
           <section className="checkout__step">
             <h3>Price</h3>
-            <PriceSummary lines={lines} totalMinor={booking.totalMinor} currency={booking.currency} totalLabel="Total paid (demo)" />
+            <PriceSummary
+              lines={lines}
+              totalMinor={booking.totalMinor}
+              currency={booking.currency}
+              totalLabel="Total paid (demo)"
+            />
             {booking.refundedMinor > 0 && (
               <table className="price-table">
                 <tbody>
-                  <tr><th scope="row">Refunded</th><td>− {formatMoney(booking.refundedMinor, booking.currency)}</td></tr>
+                  <tr>
+                    <th scope="row">Refunded</th>
+                    <td>− {formatMoney(booking.refundedMinor, booking.currency)}</td>
+                  </tr>
                 </tbody>
                 <tfoot>
-                  <tr><th scope="row">Net cost</th><td>{formatMoney(booking.netMinor, booking.currency)}</td></tr>
+                  <tr>
+                    <th scope="row">Net cost</th>
+                    <td>{formatMoney(booking.netMinor, booking.currency)}</td>
+                  </tr>
                 </tfoot>
               </table>
             )}

@@ -11,7 +11,6 @@ import type {
   ServiceFilters,
 } from '../../../shared/types';
 
-
 type LoadStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 interface BookingsState {
@@ -24,7 +23,6 @@ interface BookingsState {
   // can watch this number and reload its plan so booking costs stay current.
   planRevision: number;
 }
-
 
 export const DEFAULT_FILTERS: ServiceFilters = {
   q: '',
@@ -49,15 +47,13 @@ const initialState: BookingsState = {
   planRevision: 0,
 };
 
-
 export const loadMyBookings = createAsyncThunk(
   'bookings/loadMine',
-  async (filters: { tripId?: number | null; status?: BookingStatus | null } = {}) => {
+  async (filters: { tripId?: string | null; status?: BookingStatus | null } = {}) => {
     const response = await bookingsApi.fetchMyBookings(filters);
     return response.bookings;
   },
 );
-
 
 function upsertBooking(list: Booking[], booking: Booking): Booking[] {
   const exists = list.some((item) => item.id === booking.id);
@@ -67,7 +63,6 @@ function upsertBooking(list: Booking[], booking: Booking): Booking[] {
     : [booking, ...list];
 }
 
-
 const bookingsSlice = createSlice({
   name: 'bookings',
   initialState,
@@ -75,7 +70,11 @@ const bookingsSlice = createSlice({
     categoryChanged(state, action: PayloadAction<ServiceCategory>) {
       if (state.category !== action.payload) {
         state.category = action.payload;
-        state.filters = { ...DEFAULT_FILTERS, sort: state.filters.sort, q: state.filters.q };
+        state.filters = {
+          ...DEFAULT_FILTERS,
+          sort: state.filters.sort,
+          q: state.filters.q,
+        };
       }
     },
     filtersChanged(state, action: PayloadAction<Partial<ServiceFilters>>) {
@@ -111,12 +110,7 @@ const bookingsSlice = createSlice({
   },
 });
 
-
-export const {
-  categoryChanged,
-  filtersChanged,
-  filtersReset,
-  bookingSaved,
-} = bookingsSlice.actions;
+export const { categoryChanged, filtersChanged, filtersReset, bookingSaved } =
+  bookingsSlice.actions;
 
 export default bookingsSlice.reducer;

@@ -1,54 +1,18 @@
-// إعداد اتصال PostgreSQL باستخدام pg ومتغيرات البيئة؛ استخدامه من models. المسؤول: الفريق.
+import pg from 'pg';
 
-const { Pool, types } = require('pg');
+export function createDatabase(connectionString) {
+  if (!connectionString) throw new Error('Set DATABASE_URL in server/.env.');
 
+  const pool = new pg.Pool({ connectionString, connectionTimeoutMillis: 5000 });
 
-// #explain_notes: DATE columns stay as 'YYYY-MM-DD' strings so no timezone shift happens.
-types.setTypeParser(1082, (value) => value);
+  // #explain_notes: PostgreSQL can restart while a connection is idle. The pool
+  // removes that connection and opens a fresh one for the next request.
+  // Handling this event prevents a temporary disconnect from crashing the API.
+  pool.on('error', (error) => {
+    console.warn(
+      `Database connection interrupted (${error.code || 'disconnect'}). A new connection will be used on the next request.`,
+    );
+  });
 
-
-let pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/tripnest',
-});
-
-
-function getPool() {
   return pool;
 }
-
-
-// #explain_notes: Tests replace the pool with an in-memory PostgreSQL emulator (pg-mem).
-function setPool(nextPool) {
-  pool = nextPool;
-}
-
-
-function query(text, params) {
-  return pool.query(text, params);
-}
-
-
-// #explain_notes: Runs several statements in one transaction; rolls back on any error.
-async function withTransaction(work) {
-  const client = await pool.connect();
-
-  try {
-    await client.query('BEGIN');
-    const result = await work(client);
-    await client.query('COMMIT');
-    return result;
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
-}
-
-
-module.exports = {
-  getPool,
-  setPool,
-  query,
-  withTransaction,
-};

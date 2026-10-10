@@ -14,7 +14,6 @@ import { DemoNotice, LoadingCards, StatusMessage } from './components/StatusMess
 import type { ServiceCategory } from '../../../../shared/types';
 import './bookings.css';
 
-
 export default function ServiceCatalogPage() {
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,8 +28,13 @@ export default function ServiceCatalogPage() {
     }
   }, [dispatch, urlCategory, category]);
 
-  const activeCategory: ServiceCategory = isServiceCategory(urlCategory) ? urlCategory : category;
-  const { services, facets, status, error, retry } = useServiceSearch(activeCategory, filters);
+  const activeCategory: ServiceCategory = isServiceCategory(urlCategory)
+    ? urlCategory
+    : category;
+  const { services, facets, status, error, retry } = useServiceSearch(
+    activeCategory,
+    filters,
+  );
   const info = categoryInfo(activeCategory);
 
   function selectCategory(next: ServiceCategory) {
@@ -43,7 +47,9 @@ export default function ServiceCatalogPage() {
       <header className="page-header">
         <div>
           <h1>Travel services</h1>
-          <p className="page-header__subtitle">Find and book transport, stays, data, and experiences for your trip.</p>
+          <p className="page-header__subtitle">
+            Find and book transport, stays, data, and experiences for your trip.
+          </p>
         </div>
       </header>
 
@@ -62,7 +68,9 @@ export default function ServiceCatalogPage() {
       <div className="results-heading">
         <h2>{info.label}</h2>
         {status === 'ready' && (
-          <span className="results-count">{services.length} {services.length === 1 ? 'option' : 'options'}</span>
+          <span className="results-count">
+            {services.length} {services.length === 1 ? 'option' : 'options'}
+          </span>
         )}
       </div>
 
@@ -72,7 +80,11 @@ export default function ServiceCatalogPage() {
         <StatusMessage
           tone="error"
           title="Could not load services"
-          action={<button type="button" className="button" onClick={retry}>Try again</button>}
+          action={
+            <button type="button" className="button" onClick={retry}>
+              Try again
+            </button>
+          }
         >
           {error}
         </StatusMessage>
@@ -82,7 +94,15 @@ export default function ServiceCatalogPage() {
         <StatusMessage
           tone="empty"
           title="No services match these filters"
-          action={<button type="button" className="button" onClick={() => dispatch(filtersReset())}>Reset filters</button>}
+          action={
+            <button
+              type="button"
+              className="button"
+              onClick={() => dispatch(filtersReset())}
+            >
+              Reset filters
+            </button>
+          }
         >
           Try a different search, a higher price limit, or fewer filters.
         </StatusMessage>

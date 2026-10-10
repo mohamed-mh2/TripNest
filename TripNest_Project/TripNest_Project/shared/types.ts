@@ -1,16 +1,15 @@
 // أنواع TypeScript للواجهة تصف JSON المتبادل مع REST API؛ خادم JavaScript لا يستورد هذا الملف مباشرة؛ دون any. المسؤول: الفريق.
 
-
 // ---------- Session and trips (placeholder shapes until accounts and trips are implemented) ----------
 
 export interface DemoUser {
-  id: number;
+  id: string;
   fullName: string;
   role: 'customer' | 'admin';
 }
 
 export interface TripSummary {
-  id: number;
+  id: string;
   title: string;
   destinationCity: string;
   currency: string;
@@ -19,12 +18,13 @@ export interface TripSummary {
   status: 'active' | 'archived';
 }
 
-
 // ---------- Travel services and bookings (abed alrahman) ----------
 
-export type ServiceCategory = 'flight' | 'train' | 'ferry' | 'hotel' | 'esim' | 'transfer' | 'activity';
+export type ServiceCategory =
+  'flight' | 'train' | 'ferry' | 'hotel' | 'esim' | 'transfer' | 'activity';
 
-export type PriceUnit = 'per_traveler' | 'per_room_night' | 'per_item' | 'per_vehicle' | 'per_ticket';
+export type PriceUnit =
+  'per_traveler' | 'per_room_night' | 'per_item' | 'per_vehicle' | 'per_ticket';
 
 export type ServiceSort = 'recommended' | 'price_asc' | 'price_desc' | 'rating' | 'name';
 
@@ -160,9 +160,9 @@ export interface DemoPaymentCard {
 export type BookingStatus = 'confirmed' | 'cancelled';
 
 export interface Booking {
-  id: number;
+  id: string;
   reference: string;
-  tripId: number;
+  tripId: string;
   tripTitle: string;
   serviceId: number;
   category: ServiceCategory;
@@ -204,10 +204,11 @@ export interface Booking {
 
 export interface CreateBookingRequest {
   serviceId: number;
-  tripId: number;
+  tripId: string;
   selection: BookingSelection;
   paymentCardId: string;
   idempotencyKey: string;
+  expectedTotalMinor: number;
 }
 
 export interface CancelBookingResponse {
@@ -224,7 +225,7 @@ export interface CancelBookingResponse {
 
 // #explain_notes: Shape used by the cost planner (Student 3): netMinor = bookedTotalMinor - refundedMinor.
 export interface TripBookingSummary {
-  tripId: number;
+  tripId: string;
   currency: string;
   bookingCount: number;
   bookedTotalMinor: number;

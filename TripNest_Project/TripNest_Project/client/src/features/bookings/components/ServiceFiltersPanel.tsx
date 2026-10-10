@@ -8,7 +8,6 @@ import type {
   ServiceSort,
 } from '../../../../../shared/types';
 
-
 interface ServiceFiltersPanelProps {
   category: ServiceCategory;
   filters: ServiceFilters;
@@ -17,7 +16,6 @@ interface ServiceFiltersPanelProps {
   onReset: () => void;
 }
 
-
 const SORT_LABELS: Record<ServiceSort, string> = {
   recommended: 'Recommended',
   price_asc: 'Price: low to high',
@@ -25,7 +23,6 @@ const SORT_LABELS: Record<ServiceSort, string> = {
   rating: 'Highest rated',
   name: 'Name (A-Z)',
 };
-
 
 function OptionSelect(props: {
   label: string;
@@ -37,16 +34,20 @@ function OptionSelect(props: {
   return (
     <label className="field">
       <span className="field__label">{props.label}</span>
-      <select value={props.value} onChange={(event) => props.onChange(event.target.value)}>
+      <select
+        value={props.value}
+        onChange={(event) => props.onChange(event.target.value)}
+      >
         <option value="">{props.anyLabel}</option>
         {props.options.map((option) => (
-          <option key={option} value={option}>{option}</option>
+          <option key={option} value={option}>
+            {option}
+          </option>
         ))}
       </select>
     </label>
   );
 }
-
 
 const SEARCH_PLACEHOLDERS: Record<ServiceCategory, string> = {
   flight: 'Search flights or airlines',
@@ -58,12 +59,21 @@ const SEARCH_PLACEHOLDERS: Record<ServiceCategory, string> = {
   activity: 'Search tours, attractions, events',
 };
 
-
-export function ServiceFiltersPanel({ category, filters, facets, onChange, onReset }: ServiceFiltersPanelProps) {
+export function ServiceFiltersPanel({
+  category,
+  filters,
+  facets,
+  onChange,
+  onReset,
+}: ServiceFiltersPanelProps) {
   const isTransport = TRANSPORT_CATEGORIES.includes(category);
 
   return (
-    <form className="filters" onSubmit={(event) => event.preventDefault()} aria-label="Search and filters">
+    <form
+      className="filters"
+      onSubmit={(event) => event.preventDefault()}
+      aria-label="Search and filters"
+    >
       <label className="field field--grow">
         <span className="field__label">Search</span>
         <input
@@ -97,7 +107,10 @@ export function ServiceFiltersPanel({ category, filters, facets, onChange, onRes
       {category === 'hotel' && (
         <label className="field">
           <span className="field__label">Hotel class</span>
-          <select value={filters.minStars} onChange={(event) => onChange({ minStars: event.target.value })}>
+          <select
+            value={filters.minStars}
+            onChange={(event) => onChange({ minStars: event.target.value })}
+          >
             <option value="">Any stars</option>
             <option value="3">3 stars or more</option>
             <option value="4">4 stars or more</option>
@@ -117,7 +130,10 @@ export function ServiceFiltersPanel({ category, filters, facets, onChange, onRes
           />
           <label className="field">
             <span className="field__label">Data</span>
-            <select value={filters.minDataGb} onChange={(event) => onChange({ minDataGb: event.target.value })}>
+            <select
+              value={filters.minDataGb}
+              onChange={(event) => onChange({ minDataGb: event.target.value })}
+            >
               <option value="">Any amount</option>
               <option value="5">5 GB or more</option>
               <option value="10">10 GB or more</option>
@@ -152,7 +168,10 @@ export function ServiceFiltersPanel({ category, filters, facets, onChange, onRes
 
       <label className="field">
         <span className="field__label">Rating</span>
-        <select value={filters.minRating} onChange={(event) => onChange({ minRating: event.target.value })}>
+        <select
+          value={filters.minRating}
+          onChange={(event) => onChange({ minRating: event.target.value })}
+        >
           <option value="">Any rating</option>
           <option value="4">4.0 or more</option>
           <option value="4.5">4.5 or more</option>
@@ -161,9 +180,14 @@ export function ServiceFiltersPanel({ category, filters, facets, onChange, onRes
 
       <label className="field">
         <span className="field__label">Sort by</span>
-        <select value={filters.sort} onChange={(event) => onChange({ sort: event.target.value as ServiceSort })}>
+        <select
+          value={filters.sort}
+          onChange={(event) => onChange({ sort: event.target.value as ServiceSort })}
+        >
           {(Object.keys(SORT_LABELS) as ServiceSort[]).map((sort) => (
-            <option key={sort} value={sort}>{SORT_LABELS[sort]}</option>
+            <option key={sort} value={sort}>
+              {SORT_LABELS[sort]}
+            </option>
           ))}
         </select>
       </label>

@@ -9,11 +9,25 @@ import { useAppDispatch, useAppSelector } from '../../../store';
 import { bookingSaved } from '../../../store/bookingsSlice';
 import { useQuote } from '../hooks/useQuote';
 import { addDays, formatDate, formatMoney } from '../format';
-import { EMPTY_SELECTION_FORM, SelectionFields, toSelection, type SelectionForm } from './SelectionFields';
+import {
+  EMPTY_SELECTION_FORM,
+  SelectionFields,
+  toSelection,
+  type SelectionForm,
+} from './SelectionFields';
 import { PolicyBox, PriceSummary } from './PriceSummary';
 import { StatusMessage } from './StatusMessage';
-import type { DemoPaymentCard, TravelService, TripSummary } from '../../../../../shared/types';
-
+import {
+  readPendingBooking,
+  rememberPendingBooking,
+  clearPendingBooking,
+} from '../pendingCheckout';
+import type {
+  CreateBookingRequest,
+  DemoPaymentCard,
+  TravelService,
+  TripSummary,
+} from '../../../../../shared/types';
 
 function createRequestKey(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -23,14 +37,16 @@ function createRequestKey(): string {
   return `key-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
 }
 
-
 function todayString(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-
 // #explain_notes: Prefills dates from the trip so the first quote appears without extra typing.
-function prefillForTrip(service: TravelService, form: SelectionForm, trip: TripSummary): SelectionForm {
+function prefillForTrip(
+  service: TravelService,
+  form: SelectionForm,
+  trip: TripSummary,
+): SelectionForm {
   const start = trip.startDate > todayString() ? trip.startDate : todayString();
 
   if (service.category === 'hotel') {
@@ -44,8 +60,11 @@ function prefillForTrip(service: TravelService, form: SelectionForm, trip: TripS
   return { ...form, date: start };
 }
 
-
-function isOutsideTrip(service: TravelService, form: SelectionForm, trip: TripSummary | null): boolean {
+function isOutsideTrip(
+  service: TravelService,
+  form: SelectionForm,
+  trip: TripSummary | null,
+): boolean {
   if (!trip) {
     return false;
   }
@@ -56,20 +75,18 @@ function isOutsideTrip(service: TravelService, form: SelectionForm, trip: TripSu
   return Boolean(start && end) && (start < trip.startDate || end > trip.endDate);
 }
 
-
 interface SubmitError {
   title: string;
   message: string;
   fields: Record<string, string>;
 }
 
-
 export function CheckoutPanel({ service }: { service: TravelService }) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { currentUserId, trips, tripsStatus } = useAppSelector((state) => state.session);
 
-  const [tripId, setTripId] = useState<number | null>(null);
+  const [tripId, setTripId] = useState<string | null>(null);
   const [form, setForm] = useState<SelectionForm>(EMPTY_SELECTION_FORM);
   const [cards, setCards] = useState<DemoPaymentCard[]>([]);
   const [cardId, setCardId] = useState('demo_card_approve');
@@ -77,7 +94,13 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<SubmitError | null>(null);
   const [declineCount, setDeclineCount] = useState(0);
+  const [quoteRevision, setQuoteRevision] = useState(0);
   const submittingRef = useRef(false);
+  const [pendingPayment, setPendingPayment] = useState<CreateBookingRequest | null>(null);
+
+  useEffect(() => {
+    setPendingPayment(currentUserId ? readPendingBooking(currentUserId) : null);
+  }, [currentUserId]);
 
   const trip = trips.find((item) => item.id === tripId) || null;
 
@@ -101,24 +124,27 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
   }, [currentUserId]);
 
   const selection = useMemo(() => toSelection(service, form), [service, form]);
-  const quoteState = useQuote(service.id, selection);
+  const quoteState = useQuote(service.id, selection, quoteRevision);
   const outsideTrip = isOutsideTrip(service, form, trip);
 
   // #explain_notes: One request key per checkout intent. Double clicks and network retries reuse it,
   // so the server returns the same booking instead of charging twice. A new choice or a decline gets a new key.
   const requestKey = useMemo(
     () => createRequestKey(),
-    [JSON.stringify(selection), tripId, cardId, declineCount],
+    [JSON.stringify(selection), tripId, cardId, declineCount, currentUserId, service.id],
   );
 
   function updateForm(changes: Partial<SelectionForm>) {
     setForm((current) => ({ ...current, ...changes }));
+    // #explain_notes: A changed selection needs a fresh price and policy review.
+    setAcceptedPolicy(false);
     setSubmitError(null);
   }
 
-  function changeTrip(nextTripId: number) {
+  function changeTrip(nextTripId: string) {
     const nextTrip = trips.find((item) => item.id === nextTripId);
     setTripId(nextTripId);
+    setAcceptedPolicy(false);
     setSubmitError(null);
 
     if (nextTrip) {
@@ -126,40 +152,61 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
     }
   }
 
-  async function confirmBooking() {
-    if (submittingRef.current || !selection || !trip) {
+  async function confirmBooking(recovery?: CreateBookingRequest) {
+    if (submittingRef.current || !currentUserId || (!recovery && (!selection || !trip))) {
       return;
     }
 
+    if (
+      !recovery &&
+      (quoteState.status !== 'ready' || !quoteState.result || pendingPayment)
+    )
+      return;
     submittingRef.current = true;
     setIsSubmitting(true);
     setSubmitError(null);
 
     try {
-      const result = await createBooking({
+      const body: CreateBookingRequest = recovery ?? {
         serviceId: service.id,
-        tripId: trip.id,
-        selection,
+        tripId: trip!.id,
+        selection: selection!,
         paymentCardId: cardId,
         idempotencyKey: requestKey,
-      });
+        expectedTotalMinor: quoteState.result!.quote.totalMinor,
+      };
+      rememberPendingBooking(currentUserId, body);
+      setPendingPayment(body);
+      const result = await createBooking(body);
+      clearPendingBooking(currentUserId);
+      setPendingPayment(null);
 
       dispatch(bookingSaved(result.booking));
       navigate(`/bookings/${result.booking.id}`, { state: { justBooked: true } });
     } catch (error) {
       const apiError = error as ApiError;
+      if (apiError.code === 'PRICE_CHANGED' || apiError.code === 'SOLD_OUT') {
+        setAcceptedPolicy(false);
+        setQuoteRevision((value) => value + 1);
+      }
+      if (apiError.status > 0 && apiError.status < 500) {
+        clearPendingBooking(currentUserId);
+        setPendingPayment(null);
+      }
 
       if (apiError.code === 'PAYMENT_DECLINED') {
         setDeclineCount((count) => count + 1);
         setSubmitError({
           title: 'Payment declined (simulation)',
-          message: 'The demo card was declined. No booking was created and nothing was charged. Choose the approving demo card to try again.',
+          message:
+            'The demo card was declined. No booking was created and nothing was charged. Choose the approving demo card to try again.',
           fields: {},
         });
-      } else if (apiError.status === 0) {
+      } else if (apiError.status === 0 || apiError.status >= 500) {
         setSubmitError({
           title: 'Connection problem',
-          message: 'We could not confirm the result. Pressing "Confirm and pay" again is safe: it will not create a second booking.',
+          message:
+            'The result is uncertain. Use "Check previous payment" to safely retry the original request. Do not start another payment yet.',
           fields: {},
         });
       } else {
@@ -181,20 +228,24 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
   const minDate = trip && trip.startDate > todayString() ? trip.startDate : todayString();
 
   const canConfirm = Boolean(
-    currentUserId !== null
-    && trip
-    && quote
-    && quoteState.status === 'ready'
-    && availability?.isAvailable
-    && !outsideTrip
-    && acceptedPolicy
-    && !isSubmitting,
+    currentUserId !== null &&
+    trip &&
+    quote &&
+    quoteState.status === 'ready' &&
+    availability?.isAvailable &&
+    !outsideTrip &&
+    cards.some((card) => card.id === cardId) &&
+    !pendingPayment &&
+    acceptedPolicy &&
+    !isSubmitting,
   );
 
   return (
     <aside className="checkout" aria-label="Book this service">
       <section className="checkout__step">
-        <h3><span className="step-number">1</span> Your selection</h3>
+        <h3>
+          <span className="step-number">1</span> Your selection
+        </h3>
         <SelectionFields
           service={service}
           form={form}
@@ -206,18 +257,34 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
       </section>
 
       <section className="checkout__step">
-        <h3><span className="step-number">2</span> Price review</h3>
+        <h3>
+          <span className="step-number">2</span> Price review
+        </h3>
 
-        {quoteState.status === 'idle' && <p className="muted">Choose dates to see the full price.</p>}
-        {quoteState.status === 'loading' && <p className="muted" aria-live="polite">Calculating price...</p>}
-        {quoteState.status === 'invalid' && <p className="field__error">{quoteState.message}</p>}
+        {quoteState.status === 'idle' && (
+          <p className="muted">Choose dates to see the full price.</p>
+        )}
+        {quoteState.status === 'loading' && (
+          <p className="muted" aria-live="polite">
+            Calculating price...
+          </p>
+        )}
+        {quoteState.status === 'invalid' && (
+          <p className="field__error">{quoteState.message}</p>
+        )}
         {quoteState.status === 'error' && (
-          <StatusMessage tone="error" title="Could not calculate the price">{quoteState.message}</StatusMessage>
+          <StatusMessage tone="error" title="Could not calculate the price">
+            {quoteState.message}
+          </StatusMessage>
         )}
 
         {quote && quoteState.status === 'ready' && (
           <>
-            <PriceSummary lines={quote.lines} totalMinor={quote.totalMinor} currency={quote.currency} />
+            <PriceSummary
+              lines={quote.lines}
+              totalMinor={quote.totalMinor}
+              currency={quote.currency}
+            />
             {availability && availability.remaining !== null && (
               <p className={availability.isAvailable ? 'muted' : 'field__error'}>
                 {availability.isAvailable
@@ -231,18 +298,25 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
       </section>
 
       <section className="checkout__step">
-        <h3><span className="step-number">3</span> Trip</h3>
+        <h3>
+          <span className="step-number">3</span> Trip
+        </h3>
 
         {currentUserId === null && (
           <StatusMessage tone="info" title="Sign in to book">
-            Choose a demo customer in the header to continue.
+            Open the saved demo trip to continue. Real sign-in will be integrated by the
+            accounts team.
           </StatusMessage>
         )}
 
-        {currentUserId !== null && tripsStatus === 'loading' && <p className="muted">Loading your trips...</p>}
+        {currentUserId !== null && tripsStatus === 'loading' && (
+          <p className="muted">Loading your trips...</p>
+        )}
 
         {currentUserId !== null && tripsStatus === 'error' && (
-          <StatusMessage tone="error" title="Could not load your trips">Please refresh the page.</StatusMessage>
+          <StatusMessage tone="error" title="Could not load your trips">
+            Please refresh the page.
+          </StatusMessage>
         )}
 
         {currentUserId !== null && tripsStatus === 'ready' && trips.length === 0 && (
@@ -254,7 +328,10 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
         {trips.length > 0 && (
           <label className="field">
             <span className="field__label">Book for trip</span>
-            <select value={tripId ?? ''} onChange={(event) => changeTrip(Number(event.target.value))}>
+            <select
+              value={tripId ?? ''}
+              onChange={(event) => changeTrip(event.target.value)}
+            >
               {trips.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.title} ({formatDate(item.startDate)} - {formatDate(item.endDate)})
@@ -263,7 +340,8 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
             </select>
             {outsideTrip && trip && (
               <span className="field__error">
-                Choose dates between {formatDate(trip.startDate)} and {formatDate(trip.endDate)}.
+                Choose dates between {formatDate(trip.startDate)} and{' '}
+                {formatDate(trip.endDate)}.
               </span>
             )}
           </label>
@@ -271,12 +349,19 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
       </section>
 
       <section className="checkout__step">
-        <h3><span className="step-number">4</span> Simulated payment</h3>
-        <p className="muted">No real card is used. Choose a preset demo card to simulate the result.</p>
+        <h3>
+          <span className="step-number">4</span> Simulated payment
+        </h3>
+        <p className="muted">
+          No real card is used. Choose a preset demo card to simulate the result.
+        </p>
 
         <div className="card-options" role="radiogroup" aria-label="Demo payment card">
           {cards.map((card) => (
-            <label key={card.id} className={`card-option${cardId === card.id ? ' card-option--active' : ''}`}>
+            <label
+              key={card.id}
+              className={`card-option${cardId === card.id ? ' card-option--active' : ''}`}
+            >
               <input
                 type="radio"
                 name="demo-card"
@@ -305,14 +390,16 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
         </label>
 
         {submitError && (
-          <StatusMessage tone="error" title={submitError.title}>{submitError.message}</StatusMessage>
+          <StatusMessage tone="error" title={submitError.title}>
+            {submitError.message}
+          </StatusMessage>
         )}
 
         <button
           type="button"
           className="button button--primary button--block"
           disabled={!canConfirm}
-          onClick={confirmBooking}
+          onClick={() => void confirmBooking()}
         >
           {isSubmitting
             ? 'Processing demo payment...'
@@ -320,8 +407,22 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
         </button>
 
         <p className="muted small">
-          Demo booking: no real ticket, reservation, or eSIM is issued. <Link to="/bookings">View my bookings</Link>
+          Demo booking: no real ticket, reservation, or eSIM is issued.{' '}
+          <Link to="/bookings">View my bookings</Link>
         </p>
+        {pendingPayment && !isSubmitting && (
+          <StatusMessage tone="warning" title="A previous payment needs checking">
+            Safely recover the original demo payment for service{' '}
+            {pendingPayment.serviceId}.
+            <button
+              type="button"
+              className="button"
+              onClick={() => void confirmBooking(pendingPayment)}
+            >
+              Check previous payment
+            </button>
+          </StatusMessage>
+        )}
       </section>
     </aside>
   );

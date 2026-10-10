@@ -3,7 +3,6 @@
 import { formatDuration, formatMoney } from '../format';
 import type { TravelService } from '../../../../../shared/types';
 
-
 export function serviceFacts(service: TravelService): string[] {
   const a = service.attributes;
 
@@ -29,7 +28,9 @@ export function serviceFacts(service: TravelService): string[] {
 
     case 'esim':
       return [
-        a.dataGb === null || a.dataGb === undefined ? 'Unlimited data' : `${a.dataGb} GB data`,
+        a.dataGb === null || a.dataGb === undefined
+          ? 'Unlimited data'
+          : `${a.dataGb} GB data`,
         `Valid ${a.validityDays} days`,
         `Coverage: ${a.coverage}`,
       ];
@@ -55,7 +56,6 @@ export function serviceFacts(service: TravelService): string[] {
   }
 }
 
-
 export function ServiceFacts({ service }: { service: TravelService }) {
   return (
     <ul className="facts">
@@ -66,12 +66,15 @@ export function ServiceFacts({ service }: { service: TravelService }) {
   );
 }
 
-
 export function PolicyBadge({ service }: { service: TravelService }) {
   const policy = service.cancellationPolicy;
 
   if (policy.freeCancelHours !== null) {
-    return <span className="badge badge--good">Free cancellation ({policy.freeCancelHours} h before)</span>;
+    return (
+      <span className="badge badge--good">
+        Free cancellation ({policy.freeCancelHours} h before)
+      </span>
+    );
   }
 
   if (policy.lateRefundPercent > 0) {
