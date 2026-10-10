@@ -31,7 +31,11 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (options.body !== undefined) headers['Content-Type'] = 'application/json';
-  if (path.startsWith('/bookings')) {
+  if (
+    path.startsWith('/bookings') ||
+    path.startsWith('/trips') ||
+    ['/auth/me', '/auth/logout'].includes(path)
+  ) {
     const session = await getFinanceSession('traveler');
     headers.Authorization = 'Bearer ' + financeAccessToken(session.token);
   }
@@ -47,5 +51,6 @@ export async function apiRequest<T>(
   }
   const data = await response.json().catch(() => null);
   if (!response.ok) throw new ApiError(response.status, data);
+  if (response.status === 204) return undefined as T;
   return data as T;
 }

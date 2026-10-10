@@ -1,3 +1,4 @@
+import { isDemoWorkspace } from '../api/accountSession';
 // طلبات المساعدة ومعالجتها من المسؤول وتصدير ملخص الرحلة. المسؤول: mohamed fody.
 
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
@@ -247,7 +248,7 @@ function AlternativeComparison({ alternative }: { alternative: SupportAlternativ
   );
 }
 
-export default function Support() {
+export default function Support({ administrator = false }: { administrator?: boolean }) {
   const dispatch = useDispatch<SupportThunkDispatch>();
   const support = useSelector(selectSupport);
   const [view, setView] = useState<SupportView>('traveler-list');
@@ -851,7 +852,7 @@ export default function Support() {
           >
             Traveler
           </button>
-          {import.meta.env.DEV && (
+          {(isDemoWorkspace() || administrator) && (
             <button
               className="tn-button-secondary"
               type="button"
@@ -868,7 +869,7 @@ export default function Support() {
                 setView('admin-list');
               }}
             >
-              Demo support agent
+              {isDemoWorkspace() ? 'Demo support agent' : 'Support administration'}
             </button>
           )}
           <button

@@ -110,7 +110,7 @@ export default function Wallet({ visible }: { visible: boolean }) {
       const data = await connectDemoWallet();
       dispatch(walletLoaded(data));
       setPending(readPending(data.id));
-      setMessage('Connected to your local demo wallet.');
+      setMessage('Connected to your simulated wallet.');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Connection failed.');
     } finally {
@@ -229,7 +229,7 @@ export default function Wallet({ visible }: { visible: boolean }) {
               <div className="wallet-balance">
                 <span>YOUR SIMULATED BALANCE</span>
                 <strong>{formatMoney(wallet.balanceMinor)}</strong>
-                <small>Demo funds in EUR · Saved to your demo account</small>
+                <small>Demo funds in EUR · Saved to your account</small>
               </div>
               <div
                 className="visa-card"
@@ -305,9 +305,7 @@ export default function Wallet({ visible }: { visible: boolean }) {
                   {pending ? 'Review pending payment' : 'Continue to demo payment →'}
                 </button>
               </form>
-
             </section>
-
           </div>
           <section className="credit-packages" aria-labelledby="packages-title">
             <div className="package-heading">
@@ -410,7 +408,6 @@ export default function Wallet({ visible }: { visible: boolean }) {
               </>
             )}
           </section>
-
         </>
       )}
       <dialog

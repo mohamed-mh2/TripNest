@@ -1,3 +1,4 @@
+import { hasAccount } from '../api/accountSession';
 import { useEffect, useRef, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -62,7 +63,7 @@ export default function Budget({ onOpenAssistant }: { onOpenAssistant: () => voi
   // #explain_notes: Remember which plan the customer opened, without copying either plan over the other.
   useEffect(() => {
     try {
-      if (localStorage.getItem('tripnest.plan-source') === 'database')
+      if (hasAccount() || localStorage.getItem('tripnest.plan-source') === 'database')
         void connectDatabase();
     } catch {
       /* Browser practice remains available when storage is blocked. */
@@ -187,7 +188,7 @@ export default function Budget({ onOpenAssistant }: { onOpenAssistant: () => voi
         /* Saving the trip still succeeded. */
       }
       setMessage(
-        'Your saved demo trip is ready. Your browser practice plan is kept separately.',
+        'Your saved trip is ready. Your browser practice plan is kept separately.',
       );
     } catch (error) {
       setApiError(error instanceof Error ? error.message : 'Connection failed.');
@@ -328,9 +329,8 @@ export default function Budget({ onOpenAssistant }: { onOpenAssistant: () => voi
         {remoteMode ? (
           <>
             <span>
-              Saved demo trip · Net booked costs:{' '}
-              {formatMoney(budget.bookedNetInCents ?? 0)}. This is still a planning
-              calculator.
+              Saved trip · Net booked costs: {formatMoney(budget.bookedNetInCents ?? 0)}.
+              This is still a planning calculator.
             </span>
             <button type="button" disabled={busy} onClick={connectDatabase}>
               Refresh saved trip
@@ -347,11 +347,11 @@ export default function Budget({ onOpenAssistant }: { onOpenAssistant: () => voi
         ) : (
           <>
             <p>
-              Practice stays in this browser. Open your saved demo trip to keep a separate
-              plan in your demo account.
+              Practice stays in this browser. Open your saved trip to keep a separate plan
+              in your account.
             </p>
             <button type="button" disabled={busy} onClick={connectDatabase}>
-              Open saved demo trip
+              Open saved trip
             </button>
           </>
         )}
