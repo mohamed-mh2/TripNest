@@ -6,7 +6,6 @@ import { ApiError } from '../../../api';
 import { fetchQuote } from '../../../api/bookings';
 import type { BookingSelection, QuoteResponse } from '../../../../../shared/types';
 
-
 type QuoteStatus = 'idle' | 'loading' | 'ready' | 'invalid' | 'error';
 
 interface QuoteState {
@@ -18,9 +17,17 @@ interface QuoteState {
 
 const QUOTE_DELAY_MS = 350;
 
-
-export function useQuote(serviceId: number, selection: BookingSelection | null): QuoteState {
-  const [state, setState] = useState<QuoteState>({ status: 'idle', result: null, fieldErrors: {}, message: null });
+export function useQuote(
+  serviceId: number,
+  selection: BookingSelection | null,
+  revision = 0,
+): QuoteState {
+  const [state, setState] = useState<QuoteState>({
+    status: 'idle',
+    result: null,
+    fieldErrors: {},
+    message: null,
+  });
 
   // #explain_notes: A string key so the effect reruns only when the selection really changes.
   const selectionKey = selection ? JSON.stringify(selection) : '';
@@ -47,9 +54,19 @@ export function useQuote(serviceId: number, selection: BookingSelection | null):
           }
 
           if (error.status === 422) {
-            setState({ status: 'invalid', result: null, fieldErrors: error.fields || {}, message: error.message });
+            setState({
+              status: 'invalid',
+              result: null,
+              fieldErrors: error.fields || {},
+              message: error.message,
+            });
           } else {
-            setState({ status: 'error', result: null, fieldErrors: {}, message: error.message });
+            setState({
+              status: 'error',
+              result: null,
+              fieldErrors: {},
+              message: error.message,
+            });
           }
         });
     }, QUOTE_DELAY_MS);
@@ -58,7 +75,7 @@ export function useQuote(serviceId: number, selection: BookingSelection | null):
       isCurrent = false;
       window.clearTimeout(timer);
     };
-  }, [serviceId, selectionKey]);
+  }, [serviceId, selectionKey, revision]);
 
   return state;
 }

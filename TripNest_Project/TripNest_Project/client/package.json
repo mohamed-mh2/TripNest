@@ -1,25 +1,27 @@
 {
   "name": "tripnest-client",
   "private": true,
-  "_note": "حزم React وTypeScript وVite وReact Router وRedux Toolkit وRecharts بشرط أنها لم تدرّس؛ وأوامر تشغيل وبناء الواجهة. المسؤول: الفريق.",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "2.5.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "react-redux": "9.2.0",
-    "react-router-dom": "6.28.0"
+    "@reduxjs/toolkit": "2.12.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-redux": "9.3.0",
+    "react-router-dom": "7.18.4",
+    "recharts": "3.10.1"
   },
   "devDependencies": {
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1",
-    "@vitejs/plugin-react": "4.3.4",
-    "typescript": "5.6.3",
-    "vite": "5.4.11"
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.0"
   }
 }

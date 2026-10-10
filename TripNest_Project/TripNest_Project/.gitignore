@@ -1,3 +1,10 @@
+# Installed dependencies and generated builds.
 node_modules/
 dist/
+coverage/
+*.log
+
+# Local secrets; the safe example file can be committed.
 .env
+.env.*
+!.env.example

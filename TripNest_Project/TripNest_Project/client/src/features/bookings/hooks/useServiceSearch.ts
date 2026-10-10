@@ -10,11 +10,9 @@ import type {
   TravelService,
 } from '../../../../../shared/types';
 
-
 type SearchStatus = 'loading' | 'ready' | 'error';
 
 const SEARCH_DELAY_MS = 300;
-
 
 export function useServiceSearch(category: ServiceCategory, filters: ServiceFilters) {
   const [services, setServices] = useState<TravelService[]>([]);
@@ -40,7 +38,7 @@ export function useServiceSearch(category: ServiceCategory, filters: ServiceFilt
     return () => {
       isCurrent = false;
     };
-  }, [category]);
+  }, [category, attempt]);
 
   // #explain_notes: Waits briefly after typing, and ignores responses from older searches.
   useEffect(() => {

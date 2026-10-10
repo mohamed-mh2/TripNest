@@ -1,15 +1,22 @@
 // Category-specific validation and server-side price calculation for travel services. المسؤول: abed alrahman.
 
-const {
+import {
   isValidDateString,
   todayString,
   daysBetween,
   combineDateAndTime,
-} = require('./dates');
-const { describePolicy, freeCancelDeadline } = require('./cancellationPolicy');
+} from './dates.js';
+import { describePolicy, freeCancelDeadline } from './cancellationPolicy.js';
 
-
-const SERVICE_CATEGORIES = ['flight', 'train', 'ferry', 'hotel', 'esim', 'transfer', 'activity'];
+const SERVICE_CATEGORIES = [
+  'flight',
+  'train',
+  'ferry',
+  'hotel',
+  'esim',
+  'transfer',
+  'activity',
+];
 const TRANSPORT_CATEGORIES = ['flight', 'train', 'ferry'];
 
 const UNIT_LABELS = {
@@ -20,11 +27,9 @@ const UNIT_LABELS = {
   per_ticket: 'ticket',
 };
 
-
 function plural(count, word) {
   return `${count} ${word}${count === 1 ? '' : 's'}`;
 }
-
 
 function readWholeNumber(selection, field, label, min, max, errors) {
   const value = Number(selection[field]);
@@ -36,7 +41,6 @@ function readWholeNumber(selection, field, label, min, max, errors) {
 
   return value;
 }
-
 
 function readFutureDate(selection, field, label, today, errors) {
   const value = selection[field];
@@ -53,7 +57,6 @@ function readFutureDate(selection, field, label, today, errors) {
 
   return value;
 }
-
 
 // #explain_notes: Each category reads only its own fields and returns billable units
 // (what the price multiplies) and capacity units (what uses up daily availability).
@@ -80,11 +83,24 @@ function readSelection(service, selection, today, errors) {
 
   if (service.category === 'hotel') {
     const checkIn = readFutureDate(selection, 'checkIn', 'Check-in date', today, errors);
-    const checkOut = readFutureDate(selection, 'checkOut', 'Check-out date', today, errors);
+    const checkOut = readFutureDate(
+      selection,
+      'checkOut',
+      'Check-out date',
+      today,
+      errors,
+    );
     const rooms = readWholeNumber(selection, 'rooms', 'Rooms', 1, 5, errors);
     const maxGuestsPerRoom = attributes.maxGuestsPerRoom || 2;
     const maxGuests = (rooms || 1) * maxGuestsPerRoom;
-    const guests = readWholeNumber(selection, 'guests', `Guests (up to ${maxGuestsPerRoom} per room)`, 1, maxGuests, errors);
+    const guests = readWholeNumber(
+      selection,
+      'guests',
+      `Guests (up to ${maxGuestsPerRoom} per room)`,
+      1,
+      maxGuests,
+      errors,
+    );
     let nights = 0;
 
     if (checkIn && checkOut) {
@@ -114,7 +130,14 @@ function readSelection(service, selection, today, errors) {
 
   if (service.category === 'esim') {
     const date = readFutureDate(selection, 'date', 'Activation date', today, errors);
-    const quantity = readWholeNumber(selection, 'quantity', 'Number of eSIMs', 1, 6, errors);
+    const quantity = readWholeNumber(
+      selection,
+      'quantity',
+      'Number of eSIMs',
+      1,
+      6,
+      errors,
+    );
 
     return {
       startDate: date,
@@ -132,7 +155,14 @@ function readSelection(service, selection, today, errors) {
 
   if (service.category === 'transfer') {
     const date = readFutureDate(selection, 'date', 'Pickup date', today, errors);
-    const travelers = readWholeNumber(selection, 'travelers', 'Passengers', 1, 20, errors);
+    const travelers = readWholeNumber(
+      selection,
+      'travelers',
+      'Passengers',
+      1,
+      20,
+      errors,
+    );
     const isPerVehicle = service.price_unit === 'per_vehicle';
     const vehicleCapacity = attributes.vehicleCapacity || 1;
     const vehicles = travelers ? Math.ceil(travelers / vehicleCapacity) : 0;
@@ -175,7 +205,6 @@ function readSelection(service, selection, today, errors) {
   errors.category = 'This service category cannot be booked.';
   return null;
 }
-
 
 // #explain_notes: The only place where booking prices are calculated. The client never sends prices.
 function calculateQuote(service, selection = {}, now = new Date()) {
@@ -255,15 +284,14 @@ function calculateQuote(service, selection = {}, now = new Date()) {
         freeCancelHours: service.free_cancel_hours,
         lateRefundPercent: service.late_refund_percent,
         freeCancelUntil: deadline ? deadline.toISOString() : null,
-        summary: describePolicy(service.free_cancel_hours, service.late_refund_percent, feesMinor),
+        summary: describePolicy(
+          service.free_cancel_hours,
+          service.late_refund_percent,
+          feesMinor,
+        ),
       },
     },
   };
 }
 
-
-module.exports = {
-  SERVICE_CATEGORIES,
-  UNIT_LABELS,
-  calculateQuote,
-};
+export { SERVICE_CATEGORIES, UNIT_LABELS, calculateQuote };

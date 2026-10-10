@@ -1,51 +1,33 @@
-// التحقق من JWT وهوية المستخدم ودور المسؤول؛ فحص ملكية السجلات داخل كل ميزة. المسؤول: madin abed.
-// #explain_notes: TEMPORARY integration adapter added by Student 2 until JWT login exists.
-// Contract for the real implementation: verify the token, then set req.user = { id, role, fullName }.
-// If req.user is already set by a JWT middleware, this adapter does nothing.
+import jwt from 'jsonwebtoken';
 
-const { HttpError } = require('../utils/httpError');
-const { findUserById } = require('../models/auth');
-
-
-function isDemoSessionAllowed() {
-  return process.env.NODE_ENV !== 'production';
+export function requireSession(db, secret) {
+  return async (req, res, next) => {
+    try {
+      const token = req.headers.authorization?.match(/^Bearer (.+)$/)?.[1];
+      if (!token) return res.status(401).json({ error: 'Sign in to access your trip.' });
+      const claims = jwt.verify(token, secret, {
+        algorithms: ['HS256'],
+        issuer: 'tripnest',
+        audience: 'tripnest-web',
+      });
+      if (typeof claims !== 'object' || !claims.sub || !claims.sid)
+        return res.status(401).json({ error: 'Invalid session.' });
+      const session = await db.query(
+        'SELECT user_id FROM sessions WHERE id=$1 AND user_id=$2 AND revoked_at IS NULL AND expires_at>now()',
+        [claims.sid, claims.sub],
+      );
+      if (!session.rows.length)
+        return res.status(401).json({ error: 'Session expired.' });
+      req.userId = claims.sub;
+      next();
+    } catch (error) {
+      if (
+        error.name?.includes('Token') ||
+        error.name === 'NotBeforeError' ||
+        error.code === '22P02'
+      )
+        return res.status(401).json({ error: 'Invalid or expired session.' });
+      next(error);
+    }
+  };
 }
-
-
-async function requireAuth(req, res, next) {
-  try {
-    if (req.user) {
-      return next();
-    }
-
-    // #explain_notes: Development-only demo session: the client sends the chosen demo user's id.
-    // It is rejected in production, so it can never act as a real login.
-    const rawUserId = req.get('X-Demo-User');
-
-    if (!isDemoSessionAllowed() || !rawUserId || !/^\d+$/.test(rawUserId)) {
-      throw new HttpError(401, 'Please sign in to continue.', { code: 'UNAUTHENTICATED' });
-    }
-
-    const user = await findUserById(Number(rawUserId));
-
-    if (!user) {
-      throw new HttpError(401, 'Please sign in to continue.', { code: 'UNAUTHENTICATED' });
-    }
-
-    req.user = {
-      id: user.id,
-      role: user.role,
-      fullName: user.full_name,
-    };
-
-    return next();
-  } catch (error) {
-    return next(error);
-  }
-}
-
-
-module.exports = {
-  requireAuth,
-  isDemoSessionAllowed,
-};

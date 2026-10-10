@@ -5,12 +5,10 @@ import { useEffect, useRef } from 'react';
 import { CATEGORIES } from '../categories';
 import type { ServiceCategory } from '../../../../../shared/types';
 
-
 interface CategoryTabsProps {
   active: ServiceCategory;
   onChange: (category: ServiceCategory) => void;
 }
-
 
 export function CategoryTabs({ active, onChange }: CategoryTabsProps) {
   const activeTabRef = useRef<HTMLButtonElement>(null);
@@ -32,7 +30,9 @@ export function CategoryTabs({ active, onChange }: CategoryTabsProps) {
           className={`category-tab${category.id === active ? ' category-tab--active' : ''}`}
           onClick={() => onChange(category.id)}
         >
-          <span className="category-tab__icon" aria-hidden="true">{category.icon}</span>
+          <span className="category-tab__icon" aria-hidden="true">
+            {category.icon}
+          </span>
           <span>{category.label}</span>
         </button>
       ))}

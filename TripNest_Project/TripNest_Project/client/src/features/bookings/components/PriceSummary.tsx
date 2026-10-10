@@ -3,7 +3,6 @@
 import { formatDateTime, formatMoney } from '../format';
 import type { CancellationPolicy, PriceLine } from '../../../../../shared/types';
 
-
 interface PriceSummaryProps {
   lines: PriceLine[];
   totalMinor: number;
@@ -11,8 +10,12 @@ interface PriceSummaryProps {
   totalLabel?: string;
 }
 
-
-export function PriceSummary({ lines, totalMinor, currency, totalLabel = 'Total' }: PriceSummaryProps) {
+export function PriceSummary({
+  lines,
+  totalMinor,
+  currency,
+  totalLabel = 'Total',
+}: PriceSummaryProps) {
   return (
     <table className="price-table">
       <tbody>
@@ -39,7 +42,6 @@ export function PriceSummary({ lines, totalMinor, currency, totalLabel = 'Total'
     </table>
   );
 }
-
 
 export function PolicyBox({ policy }: { policy: CancellationPolicy }) {
   return (

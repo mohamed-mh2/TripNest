@@ -13,7 +13,6 @@ import { DemoNotice, StatusMessage } from './components/StatusMessage';
 import type { TravelService } from '../../../../shared/types';
 import './bookings.css';
 
-
 export default function ServiceDetailsPage() {
   const { serviceId } = useParams();
   const [service, setService] = useState<TravelService | null>(null);
@@ -47,8 +46,14 @@ export default function ServiceDetailsPage() {
       <section className="page">
         <StatusMessage
           tone={error.status === 404 ? 'empty' : 'error'}
-          title={error.status === 404 ? 'Service not found' : 'Could not load this service'}
-          action={<Link className="button" to="/services">Back to services</Link>}
+          title={
+            error.status === 404 ? 'Service not found' : 'Could not load this service'
+          }
+          action={
+            <Link className="button" to="/services">
+              Back to services
+            </Link>
+          }
         >
           {error.message}
         </StatusMessage>
@@ -57,7 +62,11 @@ export default function ServiceDetailsPage() {
   }
 
   if (!service) {
-    return <p className="page-message" aria-busy="true">Loading service...</p>;
+    return (
+      <p className="page-message" aria-busy="true">
+        Loading service...
+      </p>
+    );
   }
 
   const info = categoryInfo(service.category);
@@ -71,7 +80,9 @@ export default function ServiceDetailsPage() {
 
       <div className="details-layout">
         <div className="details-main">
-          <p className="eyebrow">{info.icon} {info.label}</p>
+          <p className="eyebrow">
+            {info.icon} {info.label}
+          </p>
           <h1>{service.name}</h1>
           <p className="service-card__provider">
             {service.providerName} · {service.city} · ★ {service.rating.toFixed(1)}
@@ -85,26 +96,38 @@ export default function ServiceDetailsPage() {
 
           {amenities.length > 0 && (
             <ul className="chips" aria-label="Amenities">
-              {amenities.map((amenity) => <li key={amenity}>{amenity}</li>)}
+              {amenities.map((amenity) => (
+                <li key={amenity}>{amenity}</li>
+              ))}
             </ul>
           )}
 
           <dl className="details-list">
             <div>
               <dt>Price</dt>
-              <dd>{formatMoney(service.unitPriceMinor, service.currency)} per {service.unitLabel}</dd>
+              <dd>
+                {formatMoney(service.unitPriceMinor, service.currency)} per{' '}
+                {service.unitLabel}
+              </dd>
             </div>
             {service.bookingFeeMinor > 0 && (
               <div>
                 <dt>Booking fee</dt>
-                <dd>{formatMoney(service.bookingFeeMinor, service.currency)} per booking (non-refundable)</dd>
+                <dd>
+                  {formatMoney(service.bookingFeeMinor, service.currency)} per booking
+                  (non-refundable)
+                </dd>
               </div>
             )}
             {service.attributes.touristTaxPerGuestNightMinor ? (
               <div>
                 <dt>Tourist tax</dt>
                 <dd>
-                  {formatMoney(service.attributes.touristTaxPerGuestNightMinor, service.currency)} per guest per night
+                  {formatMoney(
+                    service.attributes.touristTaxPerGuestNightMinor,
+                    service.currency,
+                  )}{' '}
+                  per guest per night
                 </dd>
               </div>
             ) : null}

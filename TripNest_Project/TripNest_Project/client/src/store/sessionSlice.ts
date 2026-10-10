@@ -1,112 +1,55 @@
-// Redux Toolkit slice لإدارة الحساب والرحلة المختارة في الشاشات المشتركة. المسؤول: madin abed.
-// #explain_notes: Placeholder added by Student 2 for the development-only demo session and the
-// signed-in customer's trips. madin abed can replace the demo user with real login state.
-
-import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
-
-import { apiRequest, setDemoUserId } from '../api';
-import type { DemoUser, TripSummary } from '../../../shared/types';
-
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { apiRequest } from '../api';
+import type { TripSummary } from '../../../shared/types';
 
 type LoadStatus = 'idle' | 'loading' | 'ready' | 'error';
-
 interface SessionState {
-  demoUsers: DemoUser[];
-  currentUserId: number | null;
+  currentUserId: string | null;
   trips: TripSummary[];
   tripsStatus: LoadStatus;
-  usersStatus: LoadStatus;
+  error: string | null;
 }
-
-const STORAGE_KEY = 'tripnest.demoUserId';
-
-
-// #explain_notes: Remembers the chosen demo customer in this browser only (convenience, not security).
-function readStoredUserId(): number | null {
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    return stored && /^\d+$/.test(stored) ? Number(stored) : null;
-  } catch {
-    return null;
-  }
-}
-
-
-function storeUserId(userId: number | null): void {
-  try {
-    if (userId === null) {
-      window.localStorage.removeItem(STORAGE_KEY);
-    } else {
-      window.localStorage.setItem(STORAGE_KEY, String(userId));
-    }
-  } catch {
-    // Storage can be unavailable (private mode); the session still works until reload.
-  }
-}
-
-
-const initialUserId = readStoredUserId();
-setDemoUserId(initialUserId);
-
 const initialState: SessionState = {
-  demoUsers: [],
-  currentUserId: initialUserId,
+  currentUserId: null,
   trips: [],
   tripsStatus: 'idle',
-  usersStatus: 'idle',
+  error: null,
 };
 
-
-export const loadDemoUsers = createAsyncThunk('session/loadDemoUsers', async () => {
-  const response = await apiRequest<{ users: DemoUser[] }>('/auth/demo-users');
-  return response.users;
-});
-
-
-export const loadTrips = createAsyncThunk('session/loadTrips', async () => {
-  const response = await apiRequest<{ trips: TripSummary[] }>('/trips');
-  return response.trips;
-});
-
+// #explain_notes: Read-only bridge to Student 1's future accounts/trips; no parallel login system.
+export const loadBookingSession = createAsyncThunk(
+  'session/loadBookingSession',
+  async () => apiRequest<{ userId: string; trips: TripSummary[] }>('/bookings/session'),
+);
 
 const sessionSlice = createSlice({
   name: 'session',
   initialState,
   reducers: {
-    demoUserSelected(state, action: PayloadAction<number | null>) {
-      state.currentUserId = action.payload;
+    demoUserSelected(state) {
+      state.currentUserId = null;
       state.trips = [];
       state.tripsStatus = 'idle';
-      setDemoUserId(action.payload);
-      storeUserId(action.payload);
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loadDemoUsers.pending, (state) => {
-        state.usersStatus = 'loading';
-      })
-      .addCase(loadDemoUsers.fulfilled, (state, action) => {
-        state.usersStatus = 'ready';
-        state.demoUsers = action.payload;
-      })
-      .addCase(loadDemoUsers.rejected, (state) => {
-        state.usersStatus = 'error';
-      })
-      .addCase(loadTrips.pending, (state) => {
+      .addCase(loadBookingSession.pending, (state) => {
         state.tripsStatus = 'loading';
+        state.error = null;
       })
-      .addCase(loadTrips.fulfilled, (state, action) => {
+      .addCase(loadBookingSession.fulfilled, (state, action) => {
+        state.currentUserId = action.payload.userId;
+        state.trips = action.payload.trips;
         state.tripsStatus = 'ready';
-        state.trips = action.payload;
       })
-      .addCase(loadTrips.rejected, (state) => {
+      .addCase(loadBookingSession.rejected, (state, action) => {
+        state.currentUserId = null;
+        state.trips = [];
         state.tripsStatus = 'error';
+        state.error = action.error.message || 'Could not open the saved trip.';
       });
   },
 });
-
-
 export const { demoUserSelected } = sessionSlice.actions;
-
 export default sessionSlice.reducer;

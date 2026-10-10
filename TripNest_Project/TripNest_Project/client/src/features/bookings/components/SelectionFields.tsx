@@ -1,8 +1,11 @@
 // Category-specific booking inputs: dates, travelers, rooms, guests, or quantity. المسؤول: abed alrahman.
 
 import { TRANSPORT_CATEGORIES } from '../categories';
-import type { BookingSelection, TravelService, TripSummary } from '../../../../../shared/types';
-
+import type {
+  BookingSelection,
+  TravelService,
+  TripSummary,
+} from '../../../../../shared/types';
 
 export interface SelectionForm {
   date: string;
@@ -24,9 +27,11 @@ export const EMPTY_SELECTION_FORM: SelectionForm = {
   quantity: '1',
 };
 
-
 // #explain_notes: Sends only the fields the category uses. Returns null until the required dates are chosen.
-export function toSelection(service: TravelService, form: SelectionForm): BookingSelection | null {
+export function toSelection(
+  service: TravelService,
+  form: SelectionForm,
+): BookingSelection | null {
   if (service.category === 'hotel') {
     if (!form.checkIn || !form.checkOut) {
       return null;
@@ -44,13 +49,15 @@ export function toSelection(service: TravelService, form: SelectionForm): Bookin
     return null;
   }
 
-  if (TRANSPORT_CATEGORIES.includes(service.category) || service.category === 'transfer') {
+  if (
+    TRANSPORT_CATEGORIES.includes(service.category) ||
+    service.category === 'transfer'
+  ) {
     return { date: form.date, travelers: Number(form.travelers) };
   }
 
   return { date: form.date, quantity: Number(form.quantity) };
 }
-
 
 interface SelectionFieldsProps {
   service: TravelService;
@@ -61,11 +68,9 @@ interface SelectionFieldsProps {
   onChange: (changes: Partial<SelectionForm>) => void;
 }
 
-
 function FieldError({ message }: { message?: string }) {
   return message ? <span className="field__error">{message}</span> : null;
 }
-
 
 function NumberField(props: {
   label: string;
@@ -93,7 +98,6 @@ function NumberField(props: {
   );
 }
 
-
 function DateField(props: {
   label: string;
   value: string;
@@ -118,7 +122,6 @@ function DateField(props: {
   );
 }
 
-
 const DATE_LABELS: Record<string, string> = {
   flight: 'Travel date',
   train: 'Travel date',
@@ -128,24 +131,60 @@ const DATE_LABELS: Record<string, string> = {
   activity: 'Activity date',
 };
 
-
-export function SelectionFields({ service, form, trip, minDate, errors, onChange }: SelectionFieldsProps) {
+export function SelectionFields({
+  service,
+  form,
+  trip,
+  minDate,
+  errors,
+  onChange,
+}: SelectionFieldsProps) {
   const maxDate = trip?.endDate;
 
   if (service.category === 'hotel') {
-    const maxGuests = Math.max(Number(form.rooms) || 1, 1) * (service.attributes.maxGuestsPerRoom || 2);
+    const maxGuests =
+      Math.max(Number(form.rooms) || 1, 1) * (service.attributes.maxGuestsPerRoom || 2);
 
     return (
       <div className="selection-grid">
-        <DateField label="Check-in" value={form.checkIn} min={minDate} max={maxDate} error={errors.checkIn} onChange={(checkIn) => onChange({ checkIn })} />
-        <DateField label="Check-out" value={form.checkOut} min={form.checkIn || minDate} max={maxDate} error={errors.checkOut} onChange={(checkOut) => onChange({ checkOut })} />
-        <NumberField label="Rooms" value={form.rooms} min={1} max={5} error={errors.rooms} onChange={(rooms) => onChange({ rooms })} />
-        <NumberField label={`Guests (max ${maxGuests})`} value={form.guests} min={1} max={maxGuests} error={errors.guests} onChange={(guests) => onChange({ guests })} />
+        <DateField
+          label="Check-in"
+          value={form.checkIn}
+          min={minDate}
+          max={maxDate}
+          error={errors.checkIn}
+          onChange={(checkIn) => onChange({ checkIn })}
+        />
+        <DateField
+          label="Check-out"
+          value={form.checkOut}
+          min={form.checkIn || minDate}
+          max={maxDate}
+          error={errors.checkOut}
+          onChange={(checkOut) => onChange({ checkOut })}
+        />
+        <NumberField
+          label="Rooms"
+          value={form.rooms}
+          min={1}
+          max={5}
+          error={errors.rooms}
+          onChange={(rooms) => onChange({ rooms })}
+        />
+        <NumberField
+          label={`Guests (max ${maxGuests})`}
+          value={form.guests}
+          min={1}
+          max={maxGuests}
+          error={errors.guests}
+          onChange={(guests) => onChange({ guests })}
+        />
       </div>
     );
   }
 
-  const usesTravelers = TRANSPORT_CATEGORIES.includes(service.category) || service.category === 'transfer';
+  const usesTravelers =
+    TRANSPORT_CATEGORIES.includes(service.category) || service.category === 'transfer';
 
   return (
     <div className="selection-grid">

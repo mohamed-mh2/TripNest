@@ -1,0 +1,501 @@
+/* Shared interaction styles. Keep visible focus and respect reduced-motion preferences. */
+:root {
+  font-family: Inter, 'Segoe UI', Arial, sans-serif;
+  background: #f4f7f8;
+  color: #19383f;
+  --accent: #176c5e;
+  --focus: #27a58e;
+}
+
+body {
+  background: radial-gradient(ellipse at 80% 0, #e9f3f0, transparent 45%), #f5f7f8;
+}
+
+main {
+  background: transparent;
+  border: 0;
+  margin: 0 auto;
+  border-radius: 0;
+}
+
+button,
+input,
+select,
+summary,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+input,
+select,
+summary {
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+button:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px #123e4215;
+}
+
+button:not(:disabled):active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:is(button, a, input, select, summary):focus-visible {
+  outline: 3px solid #2b9e8c;
+  outline-offset: 4px;
+}
+
+input:not([type='checkbox']):focus,
+select:focus {
+  border-color: #68b7a6 !important;
+  box-shadow: 0 0 0 4px #4cae9414;
+}
+
+input:read-only {
+  background: #eef4f3;
+}
+
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px max(24px, calc((100vw - 1210px) / 2));
+  border-bottom: 1px solid #dae7e3aa;
+  background: #ffffffed;
+  backdrop-filter: blur(18px);
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: #173f49;
+  font-size: 24px;
+  font-weight: 850;
+  letter-spacing: -1.2px;
+  cursor: pointer;
+}
+
+.app-brand span {
+  color: #177e73;
+}
+
+.app-brand i {
+  font-style: normal;
+  font-size: 20px;
+  color: #177e73;
+  margin-left: 7px;
+}
+
+.app-brand:hover {
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.app-bar .feature-nav {
+  position: static;
+  display: flex;
+  gap: 5px;
+  background: #ecf2f1;
+  border: 1px solid #e2eae8;
+  border-radius: 40px;
+  padding: 5px;
+  margin: 0;
+}
+
+.app-bar .feature-nav button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 17px;
+  border-radius: 28px;
+  background: transparent;
+  color: #6d8184;
+  border: 0;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.app-bar .feature-nav button[aria-current='page'] {
+  background: white;
+  color: #1e6859;
+  box-shadow: 0 3px 9px #1a554414;
+}
+
+.app-bar .feature-nav button > span {
+  font-size: 17px;
+}
+
+.app-demo-indicator {
+  font-size: 10px;
+  color: #839490;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.app-demo-indicator i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #58a38b;
+}
+
+.workspace-view {
+  animation: workspace-in 0.3s ease-out;
+}
+
+.workspace-view[hidden] {
+  display: none !important;
+}
+
+:is(.budget-page, .wallet-page, .cash-page, .family-page) button {
+  border-radius: 13px;
+  font-weight: 650;
+  min-height: 42px;
+  letter-spacing: 0.05px;
+}
+
+.budget-page :is(.panel, .summary article),
+.wallet-panel {
+  box-shadow: 0 6px 25px #25464105;
+}
+
+.budget-page .panel {
+  border-radius: 22px;
+}
+
+.summary article {
+  border-radius: 19px;
+}
+
+.budget-page :is(input, select) {
+  border-radius: 12px;
+  background: white;
+}
+
+.planner-nav {
+  min-height: 65px;
+}
+
+.planner-logo {
+  display: none;
+}
+
+.nav-section {
+  letter-spacing: 1.6px;
+}
+
+.travel-hero {
+  border-radius: 29px;
+}
+
+.hero-cta {
+  border-radius: 13px;
+}
+
+.assistant-invite {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  border-radius: 22px;
+  padding: 28px;
+  background: linear-gradient(110deg, #edf3ff, #edf8f1);
+  border: 1px solid #dae7ec;
+  margin-top: 26px;
+}
+
+.assistant-invite h2 {
+  font-size: 23px;
+  margin: 10px 0;
+}
+
+.assistant-invite p {
+  font-size: 12px;
+  max-width: 600px;
+  margin: 0;
+}
+
+.assistant-invite button {
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: white !important;
+  color: #226b5d !important;
+  box-shadow: 0 6px 20px #255a4310;
+  border: 1px solid #cfe3db !important;
+}
+
+.assistant-invite button > span:first-child {
+  font-size: 23px;
+}
+
+.planning-banner {
+  margin-top: 22px;
+}
+
+.wallet-page,
+.budget-page,
+.funds-page {
+  padding-bottom: 72px !important;
+}
+
+.family-panel,
+.cash-package {
+  border-radius: 22px;
+}
+
+.cash-code {
+  overflow-wrap: anywhere;
+}
+
+.cash-receipt {
+  padding: 24px;
+  margin: 20px 0 32px;
+  border: 1px solid #9bcdbb;
+  border-radius: 22px;
+  background: linear-gradient(120deg, #e6f5ec, #f3faf7);
+  scroll-margin-top: 115px;
+}
+
+.cash-receipt h2 {
+  margin: 10px 0;
+}
+
+.cash-receipt p {
+  font-size: 14px;
+}
+
+.wallet-debit {
+  text-align: right;
+  color: #9c423d;
+}
+
+.wallet-debit small {
+  display: block;
+}
+
+dialog {
+  animation: dialog-in 0.22s ease-out;
+}
+
+dialog::backdrop {
+  backdrop-filter: blur(7px);
+}
+
+@keyframes workspace-in {
+  from {
+    opacity: 0.5;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .app-demo-indicator {
+    display: none;
+  }
+  .app-bar {
+    padding: 12px 18px;
+  }
+  .assistant-invite {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .assistant-invite button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-bar {
+    gap: 10px;
+    padding: 12px;
+  }
+  .app-brand {
+    font-size: 20px;
+  }
+  .app-brand i {
+    display: none;
+  }
+  .app-bar .feature-nav {
+    gap: 1px;
+    padding: 3px;
+  }
+  .app-bar .feature-nav button {
+    font-size: 10px;
+    padding: 9px 10px;
+    gap: 4px;
+  }
+  .app-bar .feature-nav button > span {
+    display: none;
+  }
+  .assistant-invite {
+    padding: 23px;
+  }
+  .assistant-invite h2 {
+    font-size: 21px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  button:not(:disabled):hover,
+  button:not(:disabled):active {
+    transform: none;
+  }
+}
+
+/* #explain_notes: The assistant lives in the header so it never covers a payment action. */
+.app-tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.assistant-header-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 14px;
+  border: 1px solid #c9e4db;
+  border-radius: 14px;
+  color: #176c5e;
+  background: #e9f5ee;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 42px;
+}
+
+.assistant-header-button span {
+  font-size: 21px;
+}
+
+.assistant-header-button b {
+  font-size: 12px;
+}
+
+@media (max-width: 1100px) {
+  .app-tools .app-demo-indicator {
+    display: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .assistant-header-button b {
+    display: none;
+  }
+  .assistant-header-button {
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .app-brand {
+    order: 1;
+  }
+  .app-tools {
+    order: 2;
+    margin-left: auto;
+  }
+  .app-bar .feature-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  .app-bar .feature-nav button {
+    flex: 1;
+    justify-content: center;
+    min-height: 42px;
+    font-size: 12px;
+  }
+  [id],
+  .cash-receipt {
+    scroll-margin-top: 150px;
+  }
+}
+
+/* #explain_notes: Five shared modules wrap into a navigation row on smaller screens. */
+@media (max-width: 1100px) {
+  .app-bar {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .app-brand {
+    order: 1;
+  }
+  .app-tools {
+    order: 2;
+    margin-left: auto;
+  }
+  .app-bar .feature-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+  }
+  .app-bar .feature-nav button {
+    flex: 1;
+    justify-content: center;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 520px) {
+  .app-bar .feature-nav button {
+    font-size: 10px;
+    padding: 9px 8px;
+  }
+}

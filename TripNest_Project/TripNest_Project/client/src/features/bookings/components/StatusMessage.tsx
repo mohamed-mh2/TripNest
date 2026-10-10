@@ -2,7 +2,6 @@
 
 import type { ReactNode } from 'react';
 
-
 type Tone = 'info' | 'success' | 'error' | 'warning' | 'empty';
 
 interface StatusMessageProps {
@@ -12,10 +11,12 @@ interface StatusMessageProps {
   action?: ReactNode;
 }
 
-
 export function StatusMessage({ tone, title, children, action }: StatusMessageProps) {
   return (
-    <div className={`status status--${tone}`} role={tone === 'error' ? 'alert' : 'status'}>
+    <div
+      className={`status status--${tone}`}
+      role={tone === 'error' ? 'alert' : 'status'}
+    >
       <div className="status__body">
         <strong className="status__title">{title}</strong>
         {children && <div className="status__text">{children}</div>}
@@ -24,7 +25,6 @@ export function StatusMessage({ tone, title, children, action }: StatusMessagePr
     </div>
   );
 }
-
 
 export function LoadingCards({ count = 6 }: { count?: number }) {
   return (
@@ -39,7 +39,6 @@ export function LoadingCards({ count = 6 }: { count?: number }) {
     </div>
   );
 }
-
 
 export function DemoNotice({ compact = false }: { compact?: boolean }) {
   return (

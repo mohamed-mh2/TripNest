@@ -1,19 +1,25 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "moduleDetection": "force",
     "jsx": "react-jsx",
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "isolatedModules": true,
-    "skipLibCheck": true,
     "noEmit": true,
-    "types": ["vite/client"]
+    "skipLibCheck": true,
+    "types": [
+      "vite/client"
+    ],
+    "forceConsistentCasingInFileNames": true,
+    "allowImportingTsExtensions": true
   },
-  "include": ["src", "../shared"]
+  "include": [
+    "src",
+    "../shared"
+  ]
 }

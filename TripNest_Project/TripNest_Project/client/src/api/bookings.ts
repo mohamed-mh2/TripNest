@@ -16,7 +16,6 @@ import type {
   TripBookingSummary,
 } from '../../../shared/types';
 
-
 // #explain_notes: The price filter is typed in euros by the customer and sent to the server in cents.
 function buildServiceQuery(category: ServiceCategory, filters: ServiceFilters): string {
   const params = new URLSearchParams({ category, sort: filters.sort });
@@ -51,21 +50,19 @@ function buildServiceQuery(category: ServiceCategory, filters: ServiceFilters): 
   return params.toString();
 }
 
-
 export function fetchServices(category: ServiceCategory, filters: ServiceFilters) {
-  return apiRequest<{ services: TravelService[] }>(`/services?${buildServiceQuery(category, filters)}`);
+  return apiRequest<{ services: TravelService[] }>(
+    `/services?${buildServiceQuery(category, filters)}`,
+  );
 }
-
 
 export function fetchServiceFacets(category: ServiceCategory) {
   return apiRequest<ServiceFacets>(`/services/facets?category=${category}`);
 }
 
-
 export function fetchService(serviceId: number) {
   return apiRequest<{ service: TravelService }>(`/services/${serviceId}`);
 }
-
 
 export function fetchQuote(serviceId: number, selection: BookingSelection) {
   return apiRequest<QuoteResponse>(`/services/${serviceId}/quote`, {
@@ -74,11 +71,11 @@ export function fetchQuote(serviceId: number, selection: BookingSelection) {
   });
 }
 
-
 export function fetchPaymentOptions() {
-  return apiRequest<{ isSimulation: boolean; cards: DemoPaymentCard[] }>('/bookings/payment-options');
+  return apiRequest<{ isSimulation: boolean; cards: DemoPaymentCard[] }>(
+    '/bookings/payment-options',
+  );
 }
-
 
 export function createBooking(request: CreateBookingRequest) {
   return apiRequest<{ booking: Booking; replayed: boolean }>('/bookings', {
@@ -87,8 +84,9 @@ export function createBooking(request: CreateBookingRequest) {
   });
 }
 
-
-export function fetchMyBookings(filters: { tripId?: number | null; status?: BookingStatus | null } = {}) {
+export function fetchMyBookings(
+  filters: { tripId?: string | null; status?: BookingStatus | null } = {},
+) {
   const params = new URLSearchParams();
 
   if (filters.tripId) {
@@ -104,17 +102,16 @@ export function fetchMyBookings(filters: { tripId?: number | null; status?: Book
   return apiRequest<{ bookings: Booking[] }>(`/bookings${query ? `?${query}` : ''}`);
 }
 
-
-export function fetchBooking(bookingId: number) {
+export function fetchBooking(bookingId: string) {
   return apiRequest<{ booking: Booking }>(`/bookings/${bookingId}`);
 }
 
-
-export function cancelBooking(bookingId: number) {
-  return apiRequest<CancelBookingResponse>(`/bookings/${bookingId}/cancel`, { method: 'POST' });
+export function cancelBooking(bookingId: string) {
+  return apiRequest<CancelBookingResponse>(`/bookings/${bookingId}/cancel`, {
+    method: 'POST',
+  });
 }
 
-
-export function fetchTripBookingSummary(tripId: number) {
+export function fetchTripBookingSummary(tripId: string) {
   return apiRequest<TripBookingSummary>(`/bookings/trips/${tripId}/summary`);
 }

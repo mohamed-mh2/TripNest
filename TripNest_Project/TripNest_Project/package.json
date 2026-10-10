@@ -1,19 +1,10 @@
 {
-  "name": "tripnest",
+  "name": "tripnest-project",
   "private": true,
-  "_note": "إعداد حزم المشروع وأوامر تشغيله. المسؤول: الفريق.",
-  "workspaces": [
-    "server",
-    "client"
-  ],
+  "version": "0.1.0",
   "scripts": {
-    "dev:server": "npm run dev -w server",
-    "dev:client": "npm run dev -w client",
-    "db:setup": "npm run db:setup -w server",
-    "build": "npm run build -w client",
-    "test": "node --test tests/*.test.js"
-  },
-  "devDependencies": {
-    "pg-mem": "3.0.5"
+    "dev": "node scripts/start-dev.cjs",
+    "build": "npm --prefix client run build",
+    "dev:background": "node scripts/start-dev.cjs --background"
   }
 }
