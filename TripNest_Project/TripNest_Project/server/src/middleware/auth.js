@@ -19,6 +19,7 @@ export function requireSession(db, secret) {
       if (!session.rows.length)
         return res.status(401).json({ error: 'Session expired.' });
       req.userId = claims.sub;
+      req.sessionId = claims.sid;
       next();
     } catch (error) {
       if (

@@ -4,6 +4,8 @@ import { requireSession } from './middleware/auth.js';
 import { financeRoutes } from './routes/finance.js';
 import { bookingRoutes } from './routes/bookings.js';
 import { supportRoutes } from './routes/support.js';
+import { authRoutes } from './routes/auth.js';
+import { tripsRoutes } from './routes/trips.js';
 
 export function createApp(db, { secret, demo = false }) {
   if (!secret || secret.length < 32)
@@ -90,6 +92,8 @@ export function createApp(db, { secret, demo = false }) {
         next(error);
       }
     });
+  app.use('/api/auth', authRoutes(db, secret));
+  app.use('/api/trips', tripsRoutes(db, secret));
   app.use('/api/help', supportRoutes(db, secret));
   app.use('/api', bookingRoutes(db, secret));
   app.use('/api', requireSession(db, secret), financeRoutes(db, secret));

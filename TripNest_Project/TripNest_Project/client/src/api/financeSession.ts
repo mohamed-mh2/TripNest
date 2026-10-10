@@ -1,3 +1,4 @@
+import { getAccountToken, getAccountTripId, isDemoWorkspace } from './accountSession';
 export type FinanceRole = 'traveler' | 'family';
 
 export type FinanceSession = { token: string; tripId?: string };
@@ -10,8 +11,10 @@ export function configureFinanceSession(session: FinanceSession | null) {
 }
 
 export async function getFinanceSession(role: FinanceRole): Promise<FinanceSession> {
+  const accountToken = getAccountToken();
+  if (accountToken) return { token: accountToken, tripId: getAccountTripId() };
   if (teamSession) return teamSession;
-  if (!import.meta.env.DEV) throw new Error('Sign in before opening your finances.');
+  if (!isDemoWorkspace()) throw new Error('Sign in before opening your finances.');
   const response = await fetch(
     role === 'family' ? '/api/dev/family-session' : '/api/dev/session',
   );
@@ -25,7 +28,8 @@ export async function getFinanceSession(role: FinanceRole): Promise<FinanceSessi
 // #explain_notes: Read the current login token on each request; a production logout blocks further calls.
 
 export function financeAccessToken(demoToken: string): string {
+  if (getAccountToken()) return getAccountToken();
   if (teamSession) return teamSession.token;
-  if (import.meta.env.DEV && demoToken) return demoToken;
+  if (isDemoWorkspace() && demoToken) return demoToken;
   throw new Error('Sign in before opening your finances.');
 }

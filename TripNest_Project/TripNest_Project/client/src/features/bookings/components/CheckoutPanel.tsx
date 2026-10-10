@@ -1,3 +1,4 @@
+import { getAccountTripId } from '../../../api/accountSession';
 // Booking panel: selection, server price review, trip choice, simulated payment, and confirmation. المسؤول: abed alrahman.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -106,8 +107,9 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
 
   useEffect(() => {
     if (tripId === null && trips.length > 0) {
-      setTripId(trips[0].id);
-      setForm((current) => prefillForTrip(service, current, trips[0]));
+      const selected = trips.find((trip) => trip.id === getAccountTripId()) || trips[0];
+      setTripId(selected.id);
+      setForm((current) => prefillForTrip(service, current, selected));
     }
   }, [trips, tripId, service]);
 

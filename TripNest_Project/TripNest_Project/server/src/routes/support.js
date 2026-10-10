@@ -13,9 +13,10 @@ export function supportRoutes(db, secret) {
   async function requireAdministrator(req, res, next) {
     try {
       // #explain_notes: The database grants support access; a browser role switch cannot grant it.
-      const role = await db.query('SELECT user_id FROM support_agents WHERE user_id=$1', [
-        req.userId,
-      ]);
+      const role = await db.query(
+        "SELECT id FROM users u WHERE id=$1 AND (to_jsonb(u)->>'role'='admin' OR EXISTS(SELECT 1 FROM support_agents a WHERE a.user_id=u.id))",
+        [req.userId],
+      );
       if (!role.rows.length)
         return sendError(res, 403, 'FORBIDDEN', 'A support agent account is required.');
       next();

@@ -503,3 +503,32 @@ dialog::backdrop {
     padding: 9px 8px;
   }
 }
+
+/* #explain_notes: Eight team modules stay in one scrollable navigation row on smaller screens. */
+.app-bar {
+  padding: 16px 24px;
+}
+.app-bar .feature-nav {
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.app-bar .feature-nav button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+@media (max-width: 1450px) {
+  .app-bar {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .app-bar .feature-nav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .app-tools {
+    margin-left: auto;
+  }
+}

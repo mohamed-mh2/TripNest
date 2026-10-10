@@ -1,3 +1,4 @@
+import type { Trip } from '../../../shared/types';
 import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store';
 import { addEstimates, loadServerBudget } from '../store/budgetSlice';
@@ -17,7 +18,7 @@ import {
 } from '../features/assistant/estimate';
 import './CostAssistant.css';
 
-type Props = { open: boolean; onClose: () => void };
+type Props = { open: boolean; onClose: () => void; savedTrip?: Trip };
 type DraftRange = Omit<CostRange, 'low' | 'likely' | 'high'> & {
   low: string;
   likely: string;
@@ -31,7 +32,7 @@ const toDraft = (ranges: CostRange[]): DraftRange[] =>
     high: String(r.high / 100),
   }));
 
-export default function CostAssistant({ open, onClose }: Props) {
+export default function CostAssistant({ open, onClose, savedTrip }: Props) {
   const budget = useAppSelector((s) => s.budget);
   const source = useAppSelector((s) => s.financeUi.budgetSource);
   const dispatch = useAppDispatch();
@@ -40,10 +41,28 @@ export default function CostAssistant({ open, onClose }: Props) {
   const lock = useRef(false);
   const [step, setStep] = useState(1);
   const [trip, setTrip] = useState({
-    destination: 'Barcelona',
-    days: '7',
-    nights: '6',
-    travelers: '1',
+    destination: savedTrip?.destination || 'Barcelona',
+    days: savedTrip
+      ? savedTrip.start_date && savedTrip.end_date
+        ? String(
+            Math.round(
+              (Date.parse(savedTrip.end_date) - Date.parse(savedTrip.start_date)) /
+                86400000,
+            ) + 1,
+          )
+        : ''
+      : '7',
+    nights: savedTrip
+      ? savedTrip.start_date && savedTrip.end_date
+        ? String(
+            Math.round(
+              (Date.parse(savedTrip.end_date) - Date.parse(savedTrip.start_date)) /
+                86400000,
+            ),
+          )
+        : ''
+      : '6',
+    travelers: String(savedTrip?.traveler_count || 1),
     rooms: '1',
   });
   const [ranges, setRanges] = useState<DraftRange[]>(() =>

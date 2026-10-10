@@ -1,3 +1,4 @@
+import { getAccountTripId } from '../api/accountSession';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store';
 import { loadBookingSession } from '../store/sessionSlice';
@@ -24,7 +25,11 @@ export default function TripSelector({
       session.tripsStatus === 'ready' &&
       !session.trips.some((trip) => trip.id === value)
     )
-      onChange(session.trips[0]?.id || '');
+      onChange(
+        session.trips.find((trip) => trip.id === getAccountTripId())?.id ||
+          session.trips[0]?.id ||
+          '',
+      );
   }, [session.tripsStatus, session.trips, value, onChange]);
   if (session.tripsStatus === 'error')
     return (
@@ -40,7 +45,7 @@ export default function TripSelector({
       label="Your saved trip"
       hint={
         session.tripsStatus === 'ready' && !session.trips.length
-          ? 'Create a trip in the trip planner first.'
+          ? 'Create a trip in My trips first.'
           : undefined
       }
     >

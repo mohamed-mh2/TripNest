@@ -240,3 +240,26 @@ export interface ApiErrorBody {
     fields: Record<string, string> | null;
   };
 }
+
+// ---------- Accounts and personal trips (madin abed) ----------
+export interface AccountUser {
+  id: string;
+  name: string;
+  email: string | null;
+  role: 'customer' | 'admin';
+  created_at: string;
+}
+export interface Trip {
+  id: string;
+  name: string;
+  destination: string;
+  start_date: string | null;
+  end_date: string | null;
+  traveler_count: number;
+  budget_amount: number;
+  currency: 'EUR';
+  notes: string;
+  status: 'active' | 'archived';
+  created_at: string;
+  updated_at: string;
+}

@@ -1,3 +1,4 @@
+import tripsReducer from './tripsSlice';
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import budgetReducer from './budgetSlice';
@@ -11,6 +12,7 @@ import { supportReducer } from './supportSlice';
 
 export const store = configureStore({
   reducer: {
+    trips: tripsReducer,
     budget: budgetReducer,
     wallet: walletReducer,
     financeUi: financeUiReducer,
