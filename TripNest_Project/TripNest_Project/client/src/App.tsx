@@ -7,11 +7,15 @@ import { workspacePage, workspaceHash, type WorkspacePage } from './features/wor
 import './Modern.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BookingWorkspace from './features/bookings/BookingWorkspace';
+import Readiness from './pages/Services';
+import HelpCenter from './pages/Support';
 
 export default function App() {
   const route = useLocation();
   const routerNavigate = useNavigate();
-  const bookingWorkspace = route.pathname !== '/';
+  const helpWorkspace = ['/readiness', '/help'].includes(route.pathname);
+  const otherWorkspace = route.pathname !== '/';
+  const bookingWorkspace = otherWorkspace && !helpWorkspace;
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [route.pathname]);
@@ -56,12 +60,14 @@ export default function App() {
             { id: 'budget', name: 'Trip planner', icon: '◈' },
             { id: 'wallet', name: 'Wallet', icon: '▤' },
             { id: 'funds', name: 'Travel funds', icon: '↗' },
+            { id: 'readiness', name: 'Readiness', icon: '☑' },
+            { id: 'help', name: 'Help center', icon: '?' },
           ].map((item) => (
             <button
               key={item.id}
               aria-current={
                 (
-                  bookingWorkspace
+                  otherWorkspace
                     ? route.pathname.startsWith('/' + item.id)
                     : page === item.id
                 )
@@ -69,7 +75,7 @@ export default function App() {
                   : undefined
               }
               onClick={() =>
-                item.id === 'services' || item.id === 'bookings'
+                ['services', 'bookings', 'readiness', 'help'].includes(item.id)
                   ? routerNavigate('/' + item.id)
                   : navigate(item.id as typeof page)
               }
@@ -98,16 +104,18 @@ export default function App() {
       </header>
 
       {/* #explain_notes: Pages stay mounted so switching never copies the saved trip into practice storage. */}
-      <div hidden={bookingWorkspace || page !== 'budget'} className="workspace-view">
+      <div hidden={otherWorkspace || page !== 'budget'} className="workspace-view">
         <Budget onOpenAssistant={() => setAssistantOpen(true)} />
       </div>
-      <div hidden={bookingWorkspace || page !== 'wallet'} className="workspace-view">
-        <Wallet visible={!bookingWorkspace && page === 'wallet'} />
+      <div hidden={otherWorkspace || page !== 'wallet'} className="workspace-view">
+        <Wallet visible={!otherWorkspace && page === 'wallet'} />
       </div>
-      <div hidden={bookingWorkspace || page !== 'funds'} className="workspace-view">
-        <TravelFunds visible={!bookingWorkspace && page === 'funds'} />
+      <div hidden={otherWorkspace || page !== 'funds'} className="workspace-view">
+        <TravelFunds visible={!otherWorkspace && page === 'funds'} />
       </div>
       {bookingWorkspace && <BookingWorkspace />}
+      {route.pathname === '/readiness' && <Readiness />}
+      {route.pathname === '/help' && <HelpCenter />}
       <CostAssistant open={assistantOpen} onClose={() => setAssistantOpen(false)} />
     </>
   );
