@@ -5,6 +5,7 @@ import walletReducer from './walletSlice';
 import financeUiReducer from './financeUiSlice';
 import sessionReducer from './sessionSlice';
 import bookingsReducer from './bookingsSlice';
+import { supportReducer } from './supportSlice';
 
 // The team can register other feature reducers alongside budget here.
 
@@ -15,6 +16,7 @@ export const store = configureStore({
     financeUi: financeUiReducer,
     session: sessionReducer,
     bookings: bookingsReducer,
+    support: supportReducer,
   },
 });
 

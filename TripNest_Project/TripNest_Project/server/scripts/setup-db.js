@@ -33,3 +33,5 @@ try {
 }
 
 await import('./migrate-bookings.js');
+
+await import('./migrate-support.js');

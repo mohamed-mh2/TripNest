@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { requireSession } from './middleware/auth.js';
 import { financeRoutes } from './routes/finance.js';
 import { bookingRoutes } from './routes/bookings.js';
+import { supportRoutes } from './routes/support.js';
 
 export function createApp(db, { secret, demo = false }) {
   if (!secret || secret.length < 32)
@@ -65,6 +66,31 @@ export function createApp(db, { secret, demo = false }) {
         next(e);
       }
     });
+  if (demo)
+    app.get('/api/dev/support-session', async (req, res, next) => {
+      try {
+        const result = await db.query(
+          "SELECT s.id,s.user_id FROM sessions s JOIN support_agents a ON a.user_id=s.user_id WHERE s.id='20000000-0000-4000-8000-000000000003' AND s.expires_at>now() AND s.revoked_at IS NULL",
+        );
+        if (!result.rows.length)
+          return res.status(503).json({
+            error:
+              'Run the support database migration to prepare the local support agent.',
+          });
+        const row = result.rows[0];
+        res.set('Cache-Control', 'no-store').json({
+          token: jwt.sign({ sid: row.id }, secret, {
+            subject: row.user_id,
+            expiresIn: '1h',
+            issuer: 'tripnest',
+            audience: 'tripnest-web',
+          }),
+        });
+      } catch (error) {
+        next(error);
+      }
+    });
+  app.use('/api/help', supportRoutes(db, secret));
   app.use('/api', bookingRoutes(db, secret));
   app.use('/api', requireSession(db, secret), financeRoutes(db, secret));
   app.use((req, res) => res.status(404).json({ error: 'Route not found.' }));
@@ -74,15 +100,13 @@ export function createApp(db, { secret, demo = false }) {
       error.fields ||
       (typeof error.code === 'string' && error.code !== '23505' && status < 500)
     ) {
-      return res
-        .status(status)
-        .json({
-          error: {
-            message: error.message,
-            code: error.code,
-            fields: error.fields || null,
-          },
-        });
+      return res.status(status).json({
+        error: {
+          message: error.message,
+          code: error.code,
+          fields: error.fields || null,
+        },
+      });
     }
     res.status(status).json({
       error:

@@ -468,7 +468,7 @@ dialog::backdrop {
   }
 }
 
-/* #explain_notes: Five shared modules wrap into a navigation row on smaller screens. */
+/* #explain_notes: Shared modules move to a scrollable navigation row on smaller screens. */
 @media (max-width: 1100px) {
   .app-bar {
     flex-wrap: wrap;
@@ -494,7 +494,11 @@ dialog::backdrop {
   }
 }
 @media (max-width: 520px) {
+  .app-bar .feature-nav {
+    justify-content: flex-start;
+  }
   .app-bar .feature-nav button {
+    flex: 0 0 auto;
     font-size: 10px;
     padding: 9px 8px;
   }

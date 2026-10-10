@@ -10,7 +10,8 @@
     "db:start": "node scripts/start-db.js",
     "db:setup": "node --env-file=.env scripts/setup-db.js",
     "db:migrate": "node --env-file=.env scripts/migrate-finance.js",
-    "db:bookings": "node --env-file=.env scripts/migrate-bookings.js"
+    "db:bookings": "node --env-file=.env scripts/migrate-bookings.js",
+    "db:support": "node --env-file=.env scripts/migrate-support.js"
   },
   "dependencies": {
     "express": "5.2.1",
