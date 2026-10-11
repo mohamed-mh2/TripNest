@@ -1,3 +1,4 @@
+import { hasAccount } from '../api/accountSession';
 import { useCashPackages } from '../features/cash/useCashPackages';
 import type { FinanceRole as Role } from '../api/financeSession';
 import { formatMoney as money } from '../features/budget/model';
@@ -70,31 +71,43 @@ export default function CashPackages({ visible }: { visible: boolean }) {
       </section>
 
       {/* #explain_notes: Switch between the supporter buying a gift and the traveler receiving it. */}
-      <section className="cash-connect">
-        <div>
-          <h2>Choose your demo identity</h2>
-          <p>
-            Use Supporter to buy a gift, copy its code, then connect as Traveler to redeem
-            it.
-          </p>
-        </div>
-        <label>
-          Local demo identity
-          <select
-            value={role}
-            disabled={busy}
-            onChange={(e) => setRole(e.target.value as Role)}
-          >
-            <option value="traveler">Traveler</option>
-            <option value="family">Supporter</option>
-          </select>
-        </label>
-        <button disabled={busy} onClick={connect}>
-          {busy
-            ? 'Please wait…'
-            : 'Connect as ' + (role === 'family' ? 'supporter' : 'traveler')}
-        </button>
-      </section>
+      {hasAccount() ? (
+        <section className="cash-connect">
+          <div>
+            <h2>Your account, your travel funds</h2>
+            <p>
+              Buy a package for yourself or share the code privately with someone else.
+              Each person uses their own account.
+            </p>
+          </div>
+        </section>
+      ) : (
+        <section className="cash-connect">
+          <div>
+            <h2>Choose your demo identity</h2>
+            <p>
+              Use Supporter to buy a gift, copy its code, then connect as Traveler to
+              redeem it.
+            </p>
+          </div>
+          <label>
+            Local demo identity
+            <select
+              value={role}
+              disabled={busy}
+              onChange={(e) => setRole(e.target.value as Role)}
+            >
+              <option value="traveler">Traveler</option>
+              <option value="family">Supporter</option>
+            </select>
+          </label>
+          <button disabled={busy} onClick={connect}>
+            {busy
+              ? 'Please wait…'
+              : 'Connect as ' + (role === 'family' ? 'supporter' : 'traveler')}
+          </button>
+        </section>
+      )}
 
       <div aria-live="polite">
         {message && <p className="cash-success">{message}</p>}
@@ -225,7 +238,6 @@ export default function CashPackages({ visible }: { visible: boolean }) {
               <button disabled={busy || !code.trim()}>Redeem code</button>
               {error && <p className="cash-error">{error}</p>}
             </form>
-
           </section>
 
           <section>
@@ -312,7 +324,6 @@ export default function CashPackages({ visible }: { visible: boolean }) {
               ))}
             </div>
           </section>
-
         </>
       )}
       <dialog

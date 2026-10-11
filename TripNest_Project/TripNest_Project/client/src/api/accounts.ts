@@ -9,6 +9,15 @@ export const authApi = {
     apiRequest<LoginResult>('/auth/login', { method: 'POST', body }),
   me: () => apiRequest<{ user: AccountUser }>('/auth/me'),
   logout: () => apiRequest<void>('/auth/logout', { method: 'POST' }),
+  updateProfile: (body: { name: string }) =>
+    apiRequest<{ user: AccountUser }>('/auth/profile', { method: 'PATCH', body }),
+  inspectSetup: (token: string) =>
+    apiRequest<{ invitation: { name: string; email: string; expires_at: string } }>(
+      '/auth/setup/preview',
+      { method: 'POST', body: { token } },
+    ),
+  activateSetup: (body: { token: string; password: string }) =>
+    apiRequest<LoginResult>('/auth/setup/activate', { method: 'POST', body }),
 };
 export const tripsApi = {
   list: () => apiRequest<{ trips: Trip[] }>('/trips'),

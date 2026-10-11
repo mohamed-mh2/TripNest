@@ -13,6 +13,7 @@ import { ServiceCard } from './components/ServiceCard';
 import { DemoNotice, LoadingCards, StatusMessage } from './components/StatusMessage';
 import type { ServiceCategory } from '../../../../shared/types';
 import './bookings.css';
+import TravelPhoto from '../../components/TravelPhoto';
 
 export default function ServiceCatalogPage() {
   const dispatch = useAppDispatch();
@@ -44,8 +45,13 @@ export default function ServiceCatalogPage() {
 
   return (
     <section className="page">
-      <header className="page-header">
+      <header className="catalog-story">
+        <TravelPhoto
+          name="barcelona"
+          alt="Barcelona rooftops, an illustration of a city travel experience"
+        />
         <div>
+          <span>FIND YOUR NEXT CHAPTER · DEMO CATALOG</span>
           <h1>Travel services</h1>
           <p className="page-header__subtitle">
             Find and book transport, stays, data, and experiences for your trip.

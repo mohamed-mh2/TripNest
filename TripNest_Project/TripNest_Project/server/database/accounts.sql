@@ -10,3 +10,12 @@ ALTER TABLE trips ADD COLUMN IF NOT EXISTS notes text NOT NULL DEFAULT '';
 ALTER TABLE trips ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
 ALTER TABLE trips ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
 CREATE INDEX IF NOT EXISTS trips_owner_status_idx ON trips(owner_id,status);
+
+-- One-use initial password invitations; raw activation tokens never enter the database.
+CREATE TABLE IF NOT EXISTS account_setup_invitations (
+  user_id uuid PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  token_hash text NOT NULL UNIQUE,
+  expires_at timestamptz NOT NULL,
+  used_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now()
+);

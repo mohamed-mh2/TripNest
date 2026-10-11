@@ -39,7 +39,23 @@ export type EstimateResult = {
 
 export function exampleRanges(budget: BudgetState): CostRange[] {
   const occupied = new Set(budget.expenses.map((e) => e.category));
-  const booked = (budget.bookedNetInCents ?? 0) > 0;
+  const bookingRanges: Record<string, string> = {
+    flight: 'travel',
+    train: 'travel',
+    ferry: 'travel',
+    hotel: 'stay',
+    transfer: 'local',
+    activity: 'fun',
+  };
+  const coveredRanges = new Set(
+    (budget.bookings ?? [])
+      .filter((booking) => booking.status === 'confirmed' && booking.netMinor > 0)
+      .map((booking) => bookingRanges[booking.category ?? '']),
+  );
+  // #explain_notes: Cancellation fees stay in fixed costs, but do not cover a
+  // future service. Older snapshots without booking details use a cautious fallback.
+  const unknownBookings =
+    budget.bookings === undefined && (budget.bookedNetInCents ?? 0) > 0;
   return [
     {
       id: 'travel',
@@ -99,7 +115,8 @@ export function exampleRanges(budget: BudgetState): CostRange[] {
     ...r,
     include:
       !occupied.has(r.category as Category) &&
-      !(booked && ['travel', 'stay'].includes(r.id)),
+      !coveredRanges.has(r.id) &&
+      !(unknownBookings && ['travel', 'stay'].includes(r.id)),
   })) as CostRange[];
 }
 

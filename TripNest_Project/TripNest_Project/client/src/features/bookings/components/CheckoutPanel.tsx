@@ -9,7 +9,8 @@ import { createBooking, fetchPaymentOptions } from '../../../api/bookings';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { bookingSaved } from '../../../store/bookingsSlice';
 import { useQuote } from '../hooks/useQuote';
-import { addDays, formatDate, formatMoney } from '../format';
+import { formatDate, formatMoney } from '../format';
+import { prefillForTrip } from '../selectionDefaults';
 import {
   EMPTY_SELECTION_FORM,
   SelectionFields,
@@ -40,25 +41,6 @@ function createRequestKey(): string {
 
 function todayString(): string {
   return new Date().toISOString().slice(0, 10);
-}
-
-// #explain_notes: Prefills dates from the trip so the first quote appears without extra typing.
-function prefillForTrip(
-  service: TravelService,
-  form: SelectionForm,
-  trip: TripSummary,
-): SelectionForm {
-  const start = trip.startDate > todayString() ? trip.startDate : todayString();
-
-  if (service.category === 'hotel') {
-    return {
-      ...form,
-      checkIn: start,
-      checkOut: addDays(start, 1) <= trip.endDate ? addDays(start, 1) : trip.endDate,
-    };
-  }
-
-  return { ...form, date: start };
 }
 
 function isOutsideTrip(
@@ -306,8 +288,8 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
 
         {currentUserId === null && (
           <StatusMessage tone="info" title="Sign in to book">
-            Open the saved demo trip to continue. Real sign-in will be integrated by the
-            accounts team.
+            Sign in to your account to save a booking with one of your trips.
+            <Link to="/auth">Sign in</Link>
           </StatusMessage>
         )}
 
@@ -323,7 +305,7 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
 
         {currentUserId !== null && tripsStatus === 'ready' && trips.length === 0 && (
           <StatusMessage tone="empty" title="No active trips">
-            Bookings are attached to a trip. Create a trip first.
+            Bookings are attached to a trip. <Link to="/trips">Create a trip first.</Link>
           </StatusMessage>
         )}
 
@@ -331,15 +313,24 @@ export function CheckoutPanel({ service }: { service: TravelService }) {
           <label className="field">
             <span className="field__label">Book for trip</span>
             <select
+              aria-label="Book for trip"
               value={tripId ?? ''}
               onChange={(event) => changeTrip(event.target.value)}
             >
               {trips.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.title} ({formatDate(item.startDate)} - {formatDate(item.endDate)})
+                  {item.title} (
+                  {item.datesConfigured === false
+                    ? 'Dates not set'
+                    : `${formatDate(item.startDate)} - ${formatDate(item.endDate)}`}
+                  )
                 </option>
               ))}
             </select>
+            <span className="muted small">
+              Dates and quantities start from this trip. Review them before paying; each
+              service has its own quantity limits.
+            </span>
             {outsideTrip && trip && (
               <span className="field__error">
                 Choose dates between {formatDate(trip.startDate)} and{' '}

@@ -1,3 +1,4 @@
+import { hasAccount } from '../api/accountSession';
 import { useFamilySupport } from '../features/family/useFamilySupport';
 import type { FinanceRole } from '../api/financeSession';
 import { formatMoney } from '../features/budget/model';
@@ -39,29 +40,41 @@ export default function TravelSupport({ visible }: { visible: boolean }) {
 
   return (
     <section className="family-page funds-content">
-      <section className="family-identity">
-        <div>
-          <h2>Choose your demo identity</h2>
-          <p>
-            Traveler creates a request → shares the link → Supporter reviews and confirms
-            → Traveler refreshes the wallet.
-          </p>
-        </div>
-        <label>
-          Local demo identity
-          <select
-            disabled={busy}
-            value={role}
-            onChange={(e) => setRole(e.target.value as FinanceRole)}
-          >
-            <option value="traveler">Traveler</option>
-            <option value="family">Supporter</option>
-          </select>
-        </label>
-        <button disabled={busy} onClick={connect}>
-          Connect as {role === 'family' ? 'supporter' : 'traveler'}
-        </button>
-      </section>
+      {hasAccount() ? (
+        <section className="family-identity">
+          <div>
+            <h2>Your account, your travel funds</h2>
+            <p>
+              Create a request and share its private link with someone you trust. To
+              contribute, they sign in with their own account.
+            </p>
+          </div>
+        </section>
+      ) : (
+        <section className="family-identity">
+          <div>
+            <h2>Choose your demo identity</h2>
+            <p>
+              Traveler creates a request → shares the link → Supporter reviews and
+              confirms → Traveler refreshes the wallet.
+            </p>
+          </div>
+          <label>
+            Local demo identity
+            <select
+              disabled={busy}
+              value={role}
+              onChange={(e) => setRole(e.target.value as FinanceRole)}
+            >
+              <option value="traveler">Traveler</option>
+              <option value="family">Supporter</option>
+            </select>
+          </label>
+          <button disabled={busy} onClick={connect}>
+            Connect as {role === 'family' ? 'supporter' : 'traveler'}
+          </button>
+        </section>
+      )}
 
       <div aria-live="polite">
         {message && <p className="family-success">{message}</p>}
@@ -122,7 +135,6 @@ export default function TravelSupport({ visible }: { visible: boolean }) {
                 </label>
                 <button disabled={busy || !!pending}>Create support request</button>
               </form>
-
             </section>
 
             <section className="family-panel">
@@ -162,8 +174,9 @@ export default function TravelSupport({ visible }: { visible: boolean }) {
                   </p>
                   {preview.ownRequest && (
                     <p>
-                      You cannot fund your own request. Connect as the other demo identity
-                      to try the donor side.
+                      {hasAccount()
+                        ? 'You cannot fund your own request. Share this link with someone who signs in using their own account.'
+                        : 'You cannot fund your own request. Connect as the other demo identity to try the donor side.'}
                     </p>
                   )}
                   {preview.canPay && (
@@ -188,7 +201,6 @@ export default function TravelSupport({ visible }: { visible: boolean }) {
                 </div>
               )}
             </section>
-
           </div>
 
           {link && (
@@ -271,7 +283,6 @@ export default function TravelSupport({ visible }: { visible: boolean }) {
               </ul>
             )}
           </section>
-
         </>
       )}
 

@@ -22,6 +22,7 @@ function buildServiceQuery(category: ServiceCategory, filters: ServiceFilters): 
 
   const textFilters: Array<[string, string]> = [
     ['q', filters.q.trim()],
+    ['city', filters.city],
     ['origin', filters.origin],
     ['destination', filters.destination],
     ['coverage', filters.coverage],

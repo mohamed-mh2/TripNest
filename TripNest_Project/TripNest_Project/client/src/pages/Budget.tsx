@@ -22,6 +22,7 @@ import {
   type Expense,
 } from '../features/budget/model';
 import './Budget.css';
+import TravelPhoto from '../components/TravelPhoto';
 import { setBudgetSource } from '../store/financeUiSlice';
 import {
   connectLocalBudget,
@@ -266,12 +267,9 @@ export default function Budget({ onOpenAssistant }: { onOpenAssistant: () => voi
           </span>
         </div>
         <div className="hero-photo">
-          <img
-            src="/images/travel-planner-hero.png"
-            alt="Sunlit Mediterranean coastal town and turquoise sea, with a travel notebook on a terrace"
-            width="1536"
-            height="1024"
-            fetchPriority="high"
+          <TravelPhoto
+            name="barcelona"
+            alt="Barcelona city rooftops in warm evening light"
           />
           <div className="photo-caption">
             <span>ROOM FOR A LITTLE WANDERLUST</span>

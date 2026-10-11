@@ -48,7 +48,7 @@ export function createBookingsController(pool) {
 
   async function getBookingSession(req, res) {
     const { rows } = await db.query(
-      "SELECT id,title,destination_city,currency,start_date,end_date,status FROM trips WHERE owner_id=$1 AND status='active' ORDER BY start_date,id",
+      "SELECT id,title,destination_city,currency,start_date,end_date,COALESCE((to_jsonb(trips)->>'traveler_count')::int,1) AS traveler_count,status FROM trips WHERE owner_id=$1 AND status='active' ORDER BY start_date,id",
       [req.userId],
     );
     res.json({
@@ -61,6 +61,8 @@ export function createBookingsController(pool) {
         startDate: toDateString(row.start_date) || toDateString(new Date()),
         endDate: toDateString(row.end_date) || addDays(toDateString(new Date()), 365),
         status: row.status,
+        travelerCount: row.traveler_count,
+        datesConfigured: Boolean(row.start_date && row.end_date),
       })),
     });
   }
@@ -236,6 +238,7 @@ export function createBookingsController(pool) {
     const prices = rows.map((row) => row.unit_price_minor);
 
     res.json({
+      cities: uniqueSorted(rows.map((row) => row.city)),
       origins: uniqueSorted(rows.map((row) => row.origin)),
       destinations: uniqueSorted(rows.map((row) => row.destination)),
       coverages: uniqueSorted(rows.map((row) => row.coverage)),

@@ -1,5 +1,7 @@
 // استعلامات PostgreSQL المعلّمة المعاملات والمعاملات الذرية المطلوبة لـ قائمة الاستعداد وتصدير ملخص الرحلة وطلبات المساعدة ومعالجتها من المسؤول؛ خصائص eSIM والفعاليات تستخدم محرك الحجز المشترك؛ دون كود HTTP. المسؤول: mohamed fody.
 
+import { createBudgetModel } from './budget.js';
+
 export function createSupportModel(pool) {
   // #explain_notes: Each transaction uses one connection from the shared pool.
   const database = pool && {
@@ -341,7 +343,7 @@ export function createSupportModel(pool) {
   async function getTripOverview(tripId, userId) {
     const trip = await ownedTrip(tripId, userId);
     const bookings = await query(
-      "SELECT reference,travelers FROM bookings WHERE trip_id=$1 AND status='confirmed' ORDER BY created_at",
+      "SELECT * FROM bookings WHERE trip_id=$1 AND status='confirmed' ORDER BY start_date,starts_at,created_at",
       [tripId],
     );
     const date = (value) =>
@@ -360,6 +362,19 @@ export function createSupportModel(pool) {
       travelerCount: Math.max(1, ...bookings.rows.map((row) => row.travelers || 1)),
       currency: trip.currency,
       bookingReferences: bookings.rows.map((row) => row.reference).filter(Boolean),
+      bookings: bookings.rows.map((row) => ({
+        reference: row.reference,
+        name: row.service_name || 'Saved booking',
+        category: row.category || 'Travel service',
+        startDate: date(row.start_date),
+        endDate: row.end_date ? date(row.end_date) : null,
+        startsAt: row.starts_at ? new Date(row.starts_at).toISOString() : null,
+        travelers: row.travelers,
+        quantity: row.quantity,
+        totalMinor: Number(row.total_minor),
+      })),
+      // #explain_notes: Reuse the planner calculation so exported totals match the app.
+      budget: await createBudgetModel(pool).read(userId, tripId),
       overviewSource: 'saved-trip',
     };
   }

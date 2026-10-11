@@ -251,7 +251,9 @@ function AlternativeComparison({ alternative }: { alternative: SupportAlternativ
 export default function Support({ administrator = false }: { administrator?: boolean }) {
   const dispatch = useDispatch<SupportThunkDispatch>();
   const support = useSelector(selectSupport);
-  const [view, setView] = useState<SupportView>('traveler-list');
+  const [view, setView] = useState<SupportView>(
+    administrator ? 'admin-list' : 'traveler-list',
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tripId, setTripId] = useState('');
   const [category, setCategory] = useState<SupportTicketCategory>('transport');
@@ -960,12 +962,19 @@ function AlternativePanel(props: {
       {props.mode === 'traveler' &&
       (props.approvalRecorded || props.alternative?.status === 'accepted') ? (
         <p>
-          Your approval has been recorded. The booking replacement has not been executed
-          yet.
+          Your approval has been recorded. Accepting a proposal does not replace or pay
+          for a booking automatically. Check the resolution note and your booking
+          confirmations for any changes made separately.
         </p>
       ) : null}
       {props.alternative?.status === 'rejected' ? (
         <p>This alternative was rejected. No booking was changed.</p>
+      ) : null}
+      {props.mode === 'traveler' && props.alternative?.status === 'pending' ? (
+        <p className="tn-muted">
+          Accepting records your preference. It does not cancel, replace or charge for any
+          booking. Review your bookings separately before changing your plans.
+        </p>
       ) : null}
       {props.mode === 'traveler' && props.alternative?.status === 'pending' ? (
         <div className="tn-inline-actions">

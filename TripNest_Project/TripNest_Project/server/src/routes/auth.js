@@ -24,7 +24,10 @@ export function authRoutes(db, secret) {
   }
   router.post('/register', limit, controller.register);
   router.post('/login', limit, controller.login);
+  router.post('/setup/preview', limit, controller.inspectSetup);
+  router.post('/setup/activate', limit, controller.activate);
   router.get('/me', requireSession(db, secret), controller.me);
+  router.patch('/profile', requireSession(db, secret), controller.updateProfile);
   router.post('/logout', requireSession(db, secret), controller.logout);
   return router;
 }

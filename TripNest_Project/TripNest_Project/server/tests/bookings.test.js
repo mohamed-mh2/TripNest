@@ -6,6 +6,7 @@ import pg from 'pg';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../src/app.js';
+import { seedDemoCatalog } from '../src/models/demoCatalog.js';
 import { calculateQuote } from '../src/utils/bookingPricing.js';
 import { calculateRefund } from '../src/utils/cancellationPolicy.js';
 import { addDays, todayString } from '../src/utils/dates.js';
@@ -167,6 +168,27 @@ test(
       assert.equal(filtered.body.services.length, 1);
       await call('get', '/services?minRating=bad').expect(400);
       await call('get', '/services/facets?category=hotel').expect(200);
+      const originalPrice = service.unitPriceMinor;
+      assert.deepEqual(await seedDemoCatalog(db), { added: 36, total: 65 });
+      assert.deepEqual(await seedDemoCatalog(db), { added: 0, total: 65 });
+      assert.equal(
+        (await call('get', '/services/' + service.id)).body.service.unitPriceMinor,
+        originalPrice,
+      );
+      const cityHotels = await call('get', '/services?category=hotel&city=Lisbon').expect(
+        200,
+      );
+      assert.equal(cityHotels.body.services.length, 1);
+      assert.equal(cityHotels.body.services[0].city, 'Lisbon');
+      const cityFacets = await call('get', '/services/facets?category=hotel').expect(200);
+      assert.deepEqual(cityFacets.body.cities, [
+        'Barcelona',
+        'Istanbul',
+        'Lisbon',
+        'Paris',
+        'Rome',
+      ]);
+      await call('get', '/services?city=' + 'x'.repeat(101)).expect(400);
       await call('get', '/services/invalid').expect(404);
       const hotelQuote = await call('post', '/services/' + hotel.id + '/quote', {
         selection: { checkIn: day, checkOut: addDays(day, 3), rooms: 2, guests: 4 },

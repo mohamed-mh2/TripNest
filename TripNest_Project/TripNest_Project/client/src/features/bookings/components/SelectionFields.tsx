@@ -1,6 +1,7 @@
 // Category-specific booking inputs: dates, travelers, rooms, guests, or quantity. المسؤول: abed alrahman.
 
 import { TRANSPORT_CATEGORIES } from '../categories';
+import { useId } from 'react';
 import type {
   BookingSelection,
   TravelService,
@@ -68,8 +69,12 @@ interface SelectionFieldsProps {
   onChange: (changes: Partial<SelectionForm>) => void;
 }
 
-function FieldError({ message }: { message?: string }) {
-  return message ? <span className="field__error">{message}</span> : null;
+function FieldError({ message, id }: { message?: string; id: string }) {
+  return message ? (
+    <span className="field__error" id={id}>
+      {message}
+    </span>
+  ) : null;
 }
 
 function NumberField(props: {
@@ -80,10 +85,13 @@ function NumberField(props: {
   error?: string;
   onChange: (value: string) => void;
 }) {
+  const errorId = useId();
   return (
     <label className="field">
       <span className="field__label">{props.label}</span>
       <input
+        aria-label={props.label}
+        aria-describedby={props.error ? errorId : undefined}
         type="number"
         inputMode="numeric"
         min={props.min}
@@ -93,7 +101,7 @@ function NumberField(props: {
         aria-invalid={Boolean(props.error)}
         onChange={(event) => props.onChange(event.target.value)}
       />
-      <FieldError message={props.error} />
+      <FieldError message={props.error} id={errorId} />
     </label>
   );
 }
@@ -106,10 +114,13 @@ function DateField(props: {
   error?: string;
   onChange: (value: string) => void;
 }) {
+  const errorId = useId();
   return (
     <label className="field">
       <span className="field__label">{props.label}</span>
       <input
+        aria-label={props.label}
+        aria-describedby={props.error ? errorId : undefined}
         type="date"
         value={props.value}
         min={props.min}
@@ -117,7 +128,7 @@ function DateField(props: {
         aria-invalid={Boolean(props.error)}
         onChange={(event) => props.onChange(event.target.value)}
       />
-      <FieldError message={props.error} />
+      <FieldError message={props.error} id={errorId} />
     </label>
   );
 }

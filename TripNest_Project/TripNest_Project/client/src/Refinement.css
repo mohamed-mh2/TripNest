@@ -1,0 +1,233 @@
+/* Shared finish across the four student modules. Feature styles still own their layouts. */
+body {
+  background: #f5f7f1;
+}
+textarea {
+  font: inherit;
+  resize: vertical;
+}
+textarea:focus-visible {
+  outline: 3px solid #2b9e8c;
+  outline-offset: 3px;
+}
+.app-bar {
+  padding: 16px 30px;
+  gap: 18px;
+}
+.workspace-site-links {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+}
+.workspace-site-links a {
+  color: #506c5c;
+  text-decoration: none;
+}
+.workspace-site-links a:hover {
+  text-decoration: underline;
+}
+.app-bar .feature-nav {
+  border-radius: 16px;
+  background: #edf2e9;
+}
+.app-bar .feature-nav button {
+  color: #4a6255;
+  min-height: 42px;
+  border-radius: 12px;
+}
+.app-bar .feature-nav button[aria-current='page'] {
+  color: #245d43;
+}
+.app-demo-indicator {
+  color: #50695a;
+  font-size: 11px;
+}
+.account-trip-bar {
+  max-width: 1250px;
+  padding: 15px 22px;
+  border-radius: 16px;
+  border: 1px solid #dce6d9;
+  background: #eef2e7;
+  color: #405c46;
+  font-size: 12px;
+  margin: 22px auto;
+}
+.account-trip-bar select {
+  font-size: 12px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #d6e2d2;
+}
+.account-trip-bar > a {
+  margin-left: auto;
+  color: #245e48;
+}
+.account-workspace .panel,
+.tn-card,
+.service-card,
+.filters,
+.details-panel {
+  border-color: #dee6d8;
+  box-shadow: 0 8px 30px #2c482a05;
+  border-radius: 20px;
+}
+.account-workspace,
+.bookings-workspace,
+.tn-page {
+  max-width: 1250px;
+}
+.page-heading h1,
+.tn-title,
+.bookings-workspace h1 {
+  letter-spacing: -1.2px;
+}
+.trip-list {
+  gap: 20px;
+}
+.trip-card {
+  border-radius: 20px;
+  border-color: #dce5d6;
+}
+.trip-card .card-actions {
+  flex-wrap: wrap;
+}
+.trip-form input,
+.trip-form textarea,
+.auth-card input {
+  border-radius: 11px;
+  border-color: #ceddce;
+}
+.bookings-workspace .button,
+.tn-button,
+.primary-button {
+  border-radius: 12px;
+  min-height: 44px;
+}
+.bookings-workspace .button--primary,
+.tn-button,
+.primary-button {
+  background: #245c48;
+  border-color: #245c48;
+}
+.bookings-workspace .button--primary:hover,
+.tn-button:hover,
+.primary-button:hover {
+  background: #174b38;
+}
+.service-card {
+  padding: 26px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.service-card:hover {
+  border-color: #abc3a7;
+  box-shadow: 0 12px 35px #2548370c;
+}
+.catalog-story {
+  position: relative;
+  overflow: hidden;
+  min-height: 205px;
+  border-radius: 24px;
+  background: #244b3d;
+  margin-bottom: 26px;
+  color: white;
+}
+.catalog-story .travel-photo {
+  position: absolute;
+  inset: 0;
+  object-position: 50% 55%;
+}
+.catalog-story::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #173a30eb, #173a3060);
+}
+.catalog-story > div {
+  position: relative;
+  z-index: 1;
+  padding: 35px;
+  max-width: 680px;
+}
+.catalog-story h1 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 39px;
+  margin: 7px 0 12px;
+}
+.bookings-workspace .catalog-story p {
+  color: #f1f4e8;
+  margin: 0;
+  font-size: 14px;
+}
+.catalog-story span {
+  color: #e9dfae;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+.site-footer {
+  background: transparent;
+}
+.auth-public {
+  min-height: 65vh;
+  padding: 20px 0 50px;
+  background: #f7f7f0;
+}
+.auth-public .auth-card {
+  box-shadow: 0 20px 65px #244b3d0b;
+  border-radius: 24px;
+}
+[hidden] {
+  display: none !important;
+}
+@media (max-width: 1450px) {
+  .app-bar .feature-nav {
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 700px) {
+  .app-bar {
+    padding: 12px 16px;
+  }
+  .app-tools {
+    gap: 10px;
+  }
+  .workspace-site-links {
+    gap: 10px;
+    font-size: 11px;
+  }
+  .account-trip-bar {
+    margin: 16px;
+    padding: 16px;
+  }
+  .account-trip-bar label {
+    width: 100%;
+  }
+  .account-trip-bar select {
+    max-width: 100%;
+  }
+  .catalog-story > div {
+    padding: 28px;
+  }
+  .catalog-story h1 {
+    font-size: 30px;
+  }
+  .site-brand {
+    font-size: 23px;
+  }
+}
+@media (max-width: 380px) {
+  .workspace-site-links {
+    display: none;
+  }
+}
+
+.archive-confirmation {
+  grid-column: 1 / -1;
+  flex-basis: 100%;
+  padding: 18px;
+  border: 1px solid #ead6c5;
+  border-radius: 16px;
+  background: #fff8ec;
+}

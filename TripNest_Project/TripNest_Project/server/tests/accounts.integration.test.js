@@ -119,6 +119,12 @@ test(
       const trip = (await call('post', '/trips', input).expect(201)).body.trip;
       assert.equal(trip.budget_amount, 1500);
       assert.equal(trip.start_date, day);
+      const bookingTrip = (await call('get', '/bookings/session').expect(200)).body
+        .trips[0];
+      assert.equal(bookingTrip.startDate, day);
+      assert.equal(bookingTrip.endDate, input.endDate);
+      assert.equal(bookingTrip.travelerCount, 2);
+      assert.equal(bookingTrip.datesConfigured, true);
       assert.equal(
         (await call('get', '/bookings/session').expect(200)).body.trips[0].id,
         trip.id,

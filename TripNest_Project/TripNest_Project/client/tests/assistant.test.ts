@@ -9,6 +9,23 @@ import {
 import { emptyBudget } from '../src/features/budget/model.ts';
 
 const trip = { destination: 'Test city', days: 3, nights: 2, travelers: 2, rooms: 1 };
+test('confirmed bookings suppress matching extra ranges; cancellation fees do not', () => {
+  const plan = {
+    ...emptyBudget,
+    bookedNetInCents: 15000,
+    bookings: [
+      { id: 'ride', category: 'transfer', status: 'confirmed', netMinor: 4000 },
+      { id: 'show', category: 'activity', status: 'confirmed', netMinor: 5000 },
+      { id: 'cancelled', category: 'flight', status: 'cancelled', netMinor: 300 },
+    ],
+  };
+  const defaults = exampleRanges(plan);
+  assert.equal(defaults.find((r) => r.id === 'local')?.include, false);
+  assert.equal(defaults.find((r) => r.id === 'fun')?.include, false);
+  assert.equal(defaults.find((r) => r.id === 'travel')?.include, true);
+  assert.equal(defaults.find((r) => r.id === 'stay')?.include, true);
+  assert.equal(defaults.find((r) => r.id === 'food')?.include, true);
+});
 const cost = (unit: CostRange['unit']): CostRange => ({
   id: unit,
   label: unit,

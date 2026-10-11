@@ -16,6 +16,8 @@ export interface TripSummary {
   startDate: string;
   endDate: string;
   status: 'active' | 'archived';
+  travelerCount?: number;
+  datesConfigured?: boolean;
 }
 
 // ---------- Travel services and bookings (abed alrahman) ----------
@@ -80,6 +82,7 @@ export interface TravelService {
 }
 
 export interface ServiceFilters {
+  city: string;
   q: string;
   origin: string;
   destination: string;
@@ -94,6 +97,7 @@ export interface ServiceFilters {
 }
 
 export interface ServiceFacets {
+  cities: string[];
   origins: string[];
   destinations: string[];
   coverages: string[];

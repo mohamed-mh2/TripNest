@@ -398,6 +398,45 @@ export function createSupportController(model) {
   }
 
   function renderTripSummaryHtml(summary) {
+    const money = (minor) =>
+      escapeHtml(
+        new Intl.NumberFormat('en-GB', {
+          style: 'currency',
+          currency: summary.currency,
+        }).format(Number(minor) / 100),
+      );
+    const bookingRows = (summary.bookings || [])
+      .map(
+        (booking) => `
+      <li class="booking">
+        <strong>${escapeHtml(booking.name)}</strong>
+        <p>${escapeHtml(booking.category)} · ${escapeHtml(booking.startDate)}${booking.endDate ? ` to ${escapeHtml(booking.endDate)}` : ''}${booking.startsAt ? ` · ${escapeHtml(booking.startsAt.slice(11, 16))} UTC` : ''}</p>
+        <p>${safeCount(booking.travelers)} travelers · ${safeCount(booking.quantity)} units · ${money(booking.totalMinor)}</p>
+        <p class="note">Reference: ${escapeHtml(booking.reference)}</p>
+      </li>`,
+      )
+      .join('');
+    const budget = summary.budget;
+    const budgetSection = budget
+      ? `
+      <section class="section">
+        <h2>Trip cost plan</h2>
+        <p>Budget: <strong>${money(budget.budgetMinor)}</strong></p>
+        <p>Net booking costs, including cancellation costs: ${money(budget.bookedNetMinor)}</p>
+        <p>Additional estimated expenses: ${money(budget.expensesMinor)}</p>
+        <ul>${budget.expenses
+          .filter((expense) => !expense.coveredByBookingId)
+          .map(
+            (expense) =>
+              `<li>${escapeHtml(expense.label)}: ${money(expense.amountMinor)}</li>`,
+          )
+          .join('')}</ul>
+        <p>Safety buffer: ${money(budget.reserveMinor)}</p>
+        <p>Planned total: <strong>${money(budget.totalMinor)}</strong></p>
+        <p>Remaining budget: <strong>${money(budget.remainingMinor)}</strong></p>
+        <p class="note">This is a future trip estimate. Your wallet balance is separate; it is not included in this budget.</p>
+      </section>`
+      : '';
     const references = summary.bookingReferences
       .map((reference) => `<li>${escapeHtml(reference)}</li>`)
       .join('');
@@ -420,6 +459,8 @@ export function createSupportController(model) {
     .section { background: #fff; border: 1px solid #e2e8e4; border-radius: 16px; padding: 20px; margin-top: 16px; }
     ul { margin: 8px 0 0; padding-inline-start: 1.2rem; }
     .note { color: #5c6b73; line-height: 1.5; }
+    p { line-height: 1.6; overflow-wrap: anywhere; }
+    .booking { padding: 12px 0; border-bottom: 1px solid #e2e8e4; }
     @media print { body { background: #fff; } main { width: auto; margin: 0; } .section { break-inside: avoid; } }
   </style>
 </head>
@@ -436,6 +477,8 @@ export function createSupportController(model) {
       <p>Booking references</p>
       <ul>${references}</ul>
     </section>
+    ${bookingRows ? `<section class="section"><h2>Confirmed itinerary</h2><ul>${bookingRows}</ul></section>` : ''}
+    ${budgetSection}
     <section class="section">
       <h2>Readiness</h2>
       <p>${safeCount(summary.readiness.completed)} of ${safeCount(summary.readiness.total)} complete (${safeCount(summary.readiness.percentage)}%)</p>
@@ -770,6 +813,8 @@ export function createSupportController(model) {
       travelerCount: trip.travelerCount,
       currency: trip.currency,
       bookingReferences: trip.bookingReferences,
+      bookings: trip.bookings,
+      budget: trip.budget,
       readiness: checklist.progress,
       support: {
         total: counts.total,

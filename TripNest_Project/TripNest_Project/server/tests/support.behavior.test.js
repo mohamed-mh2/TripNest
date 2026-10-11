@@ -97,6 +97,18 @@ test('trip summary html escapes text and omits secrets', () => {
     travelerCount: 2,
     currency: 'EUR',
     bookingReferences: ['TN-DEMO-FLIGHT-1042'],
+    bookings: [
+      {
+        name: '<img src=x onerror=alert(1)>',
+        reference: 'TN-DEMO-FLIGHT-1042',
+        category: 'flight',
+        startDate: '2026-10-12',
+        startsAt: '2026-10-12T12:30:00Z',
+        travelers: 2,
+        quantity: 2,
+        totalMinor: 10000,
+      },
+    ],
     readiness: { completed: 0, total: 6, percentage: 0 },
     support: {
       total: 1,
@@ -104,6 +116,9 @@ test('trip summary html escapes text and omits secrets', () => {
     },
   });
   assert.equal(html.includes('<script>'), false);
+  assert.equal(html.includes('<img'), false);
+  assert.match(html, /12:30 UTC/);
+  assert.match(html, /€100.00/);
   assert.match(html, /&lt;script&gt;/);
   assert.match(html, /Overview of your saved trip/);
   assert.match(html, /0 of 6 complete/);

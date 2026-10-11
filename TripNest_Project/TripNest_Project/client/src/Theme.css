@@ -1,0 +1,524 @@
+/* #explain_notes: Shared night palette across all four student modules.
+   Photography and the illustrated payment cards keep their original artwork. */
+.site-account-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  flex-shrink: 0;
+  border: 1px solid #d9e3d6;
+  border-radius: 50%;
+  background: #ffffff80;
+  color: #285340;
+}
+.theme-toggle:hover {
+  background: #e5eddf;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --night-bg: #0d1817;
+  --night-panel: #172522;
+  --night-raised: #20332d;
+  --night-field: #10201c;
+  --night-ink: #ecf3ed;
+  --night-muted: #afc2b9;
+  --night-line: #354b40;
+  --night-accent: #9bd8b9;
+  --accent: #9bd8b9;
+  --focus: #b4e7c8;
+  background: var(--night-bg);
+  color: var(--night-ink);
+}
+:root[data-theme='dark'] body,
+:root[data-theme='dark'] :is(.discovery-site, .auth-public) {
+  background: var(--night-bg);
+  color: var(--night-ink);
+}
+:root[data-theme='dark'] :is(h1, h2, h3, h4, label, dt, th, strong) {
+  color: var(--night-ink);
+}
+:root[data-theme='dark'] :is(main, dialog) p {
+  color: var(--night-muted);
+}
+:root[data-theme='dark']
+  :is(
+    .account-workspace,
+    .auth-card,
+    .tn-page,
+    .wallet-page,
+    .budget-page,
+    .family-page,
+    .cash-page
+  ) {
+  color: var(--night-ink);
+}
+:root[data-theme='dark']
+  a:not([class*='button']):not(.inspiration-card):not(.hero-trip-note) {
+  color: var(--night-accent);
+}
+:root[data-theme='dark'] :is(.site-brand, .app-brand) {
+  color: var(--night-ink);
+}
+:root[data-theme='dark'] :is(.site-brand, .app-brand) span {
+  color: var(--night-accent);
+}
+:root[data-theme='dark'] .site-links a[aria-current='page'] {
+  box-shadow: 0 2px var(--night-accent);
+}
+:root[data-theme='dark'] :is(.site-links a, .workspace-site-links a) {
+  color: var(--night-muted);
+}
+:root[data-theme='dark'] .theme-toggle {
+  background: var(--night-raised);
+  color: #ebd397;
+  border-color: var(--night-line);
+}
+:root[data-theme='dark'] .theme-toggle:hover {
+  background: #2a4438;
+}
+
+/* Surfaces, menus and finance panels. */
+:root[data-theme='dark']
+  :is(
+    .auth-card,
+    .panel,
+    .trip-card,
+    .account-popover,
+    .account-menu-toggle,
+    .wallet-panel,
+    .package-card,
+    .family-panel,
+    .cash-package,
+    .cash-history article,
+    .summary article,
+    .example-plan,
+    .discovery-feature,
+    .team-member,
+    .demo-checkout,
+    .family-checkout,
+    .cash-checkout,
+    .cost-assistant,
+    .assistant-cost-list article,
+    .forecast-metrics > div
+  ) {
+  background: var(--night-panel);
+  color: var(--night-ink);
+  border-color: var(--night-line);
+  box-shadow: 0 12px 32px #00000015;
+}
+:root[data-theme='dark'] .travel-hero {
+  background: var(--night-raised);
+}
+:root[data-theme='dark'] :is(.wallet-heading h1 em, .hero-copy h1 em) {
+  color: var(--night-accent);
+}
+:root[data-theme='dark']
+  :is(
+    .wallet-balance > span,
+    .wallet-balance small,
+    .hero-copy small,
+    .budget-page .brand
+  ) {
+  color: var(--night-muted);
+}
+:root[data-theme='dark']
+  :is(
+    .discovery-feature:hover,
+    .featured-package,
+    .cash-featured,
+    .account-popover > a:hover,
+    .account-popover > button:hover
+  ) {
+  background: var(--night-raised);
+}
+:root[data-theme='dark'] .app-bar {
+  background: #11201bef;
+  border-color: var(--night-line);
+}
+:root[data-theme='dark']
+  :is(
+    .app-bar .feature-nav,
+    .account-trip-bar,
+    .funds-switch,
+    .auth-tabs button,
+    .assistant-progress li span,
+    .family-identity,
+    .cash-connect,
+    .order-summary,
+    .practice-note,
+    .assistant-note,
+    .assistant-existing,
+    .assistant-method,
+    .assistant-heading,
+    .assistant-invite,
+    .example-plan-head,
+    .feature-symbol,
+    .team-avatar,
+    .prototype-section,
+    .support-story,
+    .cash-ticket,
+    .cash-redeem,
+    .cash-code,
+    .family-preview,
+    .family-share,
+    .family-status,
+    .cash-status,
+    .family-page .family-secondary,
+    .cash-page .cash-secondary,
+    .wallet-page .wallet-secondary,
+    .budget-page .secondary,
+    .assistant-secondary,
+    .account-access
+  ) {
+  background: var(--night-raised);
+  color: var(--night-ink);
+  border-color: var(--night-line);
+}
+:root[data-theme='dark'] :is(.app-bar .feature-nav button, .funds-switch button) {
+  color: var(--night-muted);
+}
+:root[data-theme='dark']
+  :is(
+    .app-bar .feature-nav button[aria-current='page'],
+    .funds-switch button[aria-selected='true']
+  ) {
+  background: #35533e;
+  color: #d7f3df;
+  border-color: #547660;
+}
+:root[data-theme='dark'] :is(.funds-switch button > span, .assistant-header-button) {
+  background: #233e31;
+  color: var(--night-accent);
+  border-color: var(--night-line);
+}
+:root[data-theme='dark']
+  :is(
+    .account-popover-person,
+    .account-popover > button,
+    .account-popover > a,
+    .account-trip-bar,
+    .discovery-ribbon,
+    .site-footer,
+    .example-plan dl > div,
+    .journey-steps li
+  ) {
+  border-color: var(--night-line);
+}
+:root[data-theme='dark'] :is(.account-avatar, .profile-avatar) {
+  background: #386749;
+  color: #f3faef;
+}
+:root[data-theme='dark'] .account-popover-person span {
+  color: var(--night-muted);
+}
+:root[data-theme='dark'] .account-popover-person small {
+  color: var(--night-accent);
+}
+:root[data-theme='dark'] .account-signout {
+  color: #f6b4a8;
+}
+
+/* Native fields remain readable in each feature's forms and dialogs. */
+:root[data-theme='dark']
+  body
+  :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
+  background: var(--night-field);
+  color: var(--night-ink);
+  border-color: var(--night-line);
+}
+:root[data-theme='dark'] body input:read-only {
+  color: var(--night-muted);
+  background: #1b2c25;
+}
+:root[data-theme='dark'] body input::placeholder,
+:root[data-theme='dark'] body textarea::placeholder {
+  color: #9caf9f;
+  opacity: 1;
+}
+:root[data-theme='dark'] :is(input, select, textarea) {
+  accent-color: #9bd8b9;
+}
+:root[data-theme='dark'] :is(button, a, input, select, textarea, summary):focus-visible {
+  outline-color: #b4e7c8;
+}
+
+/* Travel photography stays natural; paper notes become warm night surfaces. */
+:root[data-theme='dark'] .hero-trip-note {
+  background: #25372d;
+  color: #f2e8cc;
+  border: 1px solid #44533a;
+}
+:root[data-theme='dark'] .hero-trip-note :is(strong, span) {
+  color: #f2e8cc;
+}
+:root[data-theme='dark'] .discovery-hero-copy :is(h1, p) {
+  color: #f4f5e9;
+}
+:root[data-theme='dark'] .inspiration-card h3 {
+  color: #fffbed;
+}
+:root[data-theme='dark']
+  :is(
+    .discovery-section-heading p,
+    .photo-context,
+    .site-footer p,
+    .site-footer > p,
+    .account-note,
+    .feature-symbol,
+    .feature-link,
+    .team-member p,
+    .prototype-section p,
+    .problem-grid p,
+    .about-intro p,
+    .about-lead,
+    .example-plan small,
+    .example-plan > p,
+    .support-story p,
+    .support-story-note,
+    .page-heading p,
+    .profile-heading p,
+    .wallet-panel p
+  ) {
+  color: var(--night-muted);
+}
+:root[data-theme='dark']
+  :is(.discovery-kicker, .eyebrow, .brand, .assistant-label, .nav-tag, .photo-stamp) {
+  color: var(--night-accent);
+}
+:root[data-theme='dark'] .discovery-ribbon {
+  color: var(--night-muted);
+}
+:root[data-theme='dark'] .discovery-ribbon b {
+  color: var(--night-ink);
+}
+:root[data-theme='dark'] .discovery-ribbon small {
+  color: var(--night-muted);
+}
+
+/* Calls to action and semantic feedback. */
+:root[data-theme='dark']
+  :is(
+    .site-button:not(.site-button--glass):not(.site-button--sun),
+    .primary-button,
+    .auth-tabs [aria-selected='true'],
+    .assistant-primary,
+    .tn-button,
+    .bookings-workspace .button--primary
+  ) {
+  background: #8dd0ad;
+  border-color: #8dd0ad;
+  color: #102c20;
+}
+:root[data-theme='dark']
+  :is(
+    .site-button:not(.site-button--glass):not(.site-button--sun),
+    .primary-button,
+    .assistant-primary,
+    .tn-button,
+    .bookings-workspace .button--primary
+  ):hover {
+  background: #b1e1bf;
+  color: #102c20;
+}
+:root[data-theme='dark'] .site-button--sun {
+  color: #223a2b;
+}
+:root[data-theme='dark'] .site-button--glass {
+  color: #f7f6ee;
+}
+:root[data-theme='dark']
+  :is(.secondary-button, .site-skip, .assistant-close, .assistant-invite button) {
+  background: var(--night-raised) !important;
+  color: var(--night-ink) !important;
+  border-color: var(--night-line) !important;
+}
+:root[data-theme='dark']
+  :is(
+    .planning-banner,
+    .booking-plan-note,
+    .wallet-notice,
+    .cash-receipt,
+    .forecast-total,
+    .account-success,
+    .site-signed-out,
+    .family-success,
+    .cash-success,
+    .assistant-success,
+    .status-paid
+  ) {
+  background: #1d3b2c;
+  border-color: #41614d;
+  color: #bfdfbf;
+}
+:root[data-theme='dark']
+  :is(
+    .planning-chip,
+    .badge,
+    .nav-tag,
+    .photo-stamp,
+    .wallet-tag,
+    .pending-note,
+    .archive-confirmation
+  ) {
+  background: #3d3520;
+  color: #ead8a3;
+  border-color: #61583a;
+}
+:root[data-theme='dark']
+  :is(
+    .form-error,
+    .wallet-error,
+    .family-error,
+    .cash-error,
+    .assistant-error,
+    .account-logout-error,
+    .budget-page .error,
+    .budget-page .warning,
+    .danger-button,
+    .summary .over-budget
+  ) {
+  background: #3f2523;
+  border-color: #72504a;
+  color: #f3b6aa;
+}
+:root[data-theme='dark']
+  :is(
+    .form-error,
+    .wallet-error,
+    .family-error,
+    .cash-error,
+    .assistant-error,
+    .account-logout-error
+  )
+  p {
+  color: #f3b6aa;
+}
+:root[data-theme='dark'] .tn-error {
+  color: #f3b6aa;
+}
+:root[data-theme='dark'] :is(.wallet-feedback, .family-feedback, .cash-feedback) {
+  color: var(--night-muted);
+}
+:root[data-theme='dark'] .empty {
+  background: var(--night-field);
+  color: var(--night-muted);
+}
+:root[data-theme='dark']
+  :is(
+    .forecast-metrics span,
+    .assistant-cost-list span,
+    .assistant-progress li,
+    .wallet-heading p,
+    .family-panel p,
+    .cash-code small,
+    .cash-history p
+  ) {
+  color: var(--night-muted);
+}
+:root[data-theme='dark'] .recharts-cartesian-axis-tick text {
+  fill: var(--night-muted);
+}
+:root[data-theme='dark'] .recharts-default-tooltip {
+  background: var(--night-panel) !important;
+  border-color: var(--night-line) !important;
+}
+
+/* These modules already expose semantic palette variables. */
+:root[data-theme='dark'] .bookings-workspace {
+  --color-bg: #0d1817;
+  --color-surface: #172522;
+  --color-text: #ecf3ed;
+  --color-muted: #afc2b9;
+  --color-border: #354b40;
+  --color-primary: #8dd0ad;
+  --color-primary-strong: #b1e1bf;
+  --color-primary-soft: #233e31;
+  --color-danger: #f3b6aa;
+  --color-danger-soft: #3f2523;
+  --color-success: #a9d9b4;
+  --color-success-soft: #1d3b2c;
+  --color-warning: #ead8a3;
+  --color-warning-soft: #3d3520;
+  --color-demo: #ceb9f3;
+  --color-demo-soft: #2c263e;
+  color: var(--night-ink);
+}
+:root[data-theme='dark'] .tn-page {
+  --tn-bg: #0d1817;
+  --tn-surface: #172522;
+  --tn-ink: #ecf3ed;
+  --tn-muted: #afc2b9;
+  --tn-line: #354b40;
+  --tn-brand: #8dd0ad;
+  --tn-brand-ink: #b1e1bf;
+  --tn-focus: #b4e7c8;
+  --tn-danger: #f3b6aa;
+  --tn-danger-bg: #3f2523;
+  --tn-ok: #a9d9b4;
+  --tn-ok-bg: #1d3b2c;
+  --tn-warn-bg: #3d3520;
+}
+:root[data-theme='dark'] .tn-page .tn-header {
+  background: linear-gradient(125deg, #203b2e, #1d3035);
+}
+:root[data-theme='dark'] .tn-page :is(.tn-check, .tn-ticket) {
+  background: var(--night-panel);
+  color: var(--night-ink);
+}
+:root[data-theme='dark'] .tn-page .tn-check[aria-pressed='true'] {
+  background: #1d3b2c;
+}
+:root[data-theme='dark'] .tn-page :is(.tn-card > .tn-card, .tn-compare > div) {
+  background: var(--night-raised);
+}
+:root[data-theme='dark'] .tn-page :is(.tn-badge, .tn-progress-track) {
+  background: var(--night-raised);
+  color: var(--night-muted);
+}
+:root[data-theme='dark']
+  .tn-page
+  :is(.tn-badge-resolved, .tn-badge-accepted, .tn-badge-completed) {
+  background: #1d3b2c;
+  color: #bfdfbf;
+}
+:root[data-theme='dark'] .tn-page :is(.tn-badge-pending, .tn-badge-in_progress) {
+  background: #3d3520;
+  color: #ead8a3;
+}
+:root[data-theme='dark'] .tn-page .tn-button:hover:not(:disabled) {
+  background: #b1e1bf;
+  color: #102c20;
+}
+:root[data-theme='dark'] .tn-page .tn-button-secondary:hover:not(:disabled) {
+  background: var(--night-raised);
+  color: var(--night-ink);
+}
+:root[data-theme='dark'] :is(.tn-page .tn-eyebrow, .cash-steps b, .cash-package > span) {
+  color: var(--night-accent);
+}
+:root[data-theme='dark'] .bookings-workspace .category-tab--active {
+  color: #102c20;
+}
+:root[data-theme='dark'] .bookings-workspace .button--danger {
+  background: #3f2523;
+  color: #f3b6aa;
+  border-color: #72504a;
+}
+
+@media (max-width: 700px) {
+  .site-account-actions {
+    gap: 8px;
+    margin-left: auto;
+  }
+  .site-account-actions .theme-toggle {
+    width: 34px;
+    height: 34px;
+  }
+}
