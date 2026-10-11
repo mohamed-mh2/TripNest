@@ -12,7 +12,9 @@
     "db:migrate": "node --env-file=.env scripts/migrate-finance.js",
     "db:bookings": "node --env-file=.env scripts/migrate-bookings.js",
     "db:support": "node --env-file=.env scripts/migrate-support.js",
-    "db:accounts": "node --env-file=.env scripts/migrate-accounts.js"
+    "db:accounts": "node --env-file=.env scripts/migrate-accounts.js",
+    "db:demo-catalog": "node --env-file-if-exists=.env scripts/seed-demo-catalog.js",
+    "admin:create": "node --env-file=.env scripts/create-admin.js"
   },
   "dependencies": {
     "express": "5.2.1",

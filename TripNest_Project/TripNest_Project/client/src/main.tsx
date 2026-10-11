@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { store } from './store';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
+import './Theme.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('The root element is missing.');

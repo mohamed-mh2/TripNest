@@ -37,3 +37,6 @@ await import('./migrate-bookings.js');
 await import('./migrate-support.js');
 
 await import('./migrate-accounts.js');
+
+if (process.env.NODE_ENV === 'development' && process.env.DEMO_MODE === 'true')
+  await import('./seed-demo-catalog.js');

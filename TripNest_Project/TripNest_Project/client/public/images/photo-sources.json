@@ -1,0 +1,29 @@
+[
+  {
+    "file": "lake-como.jpg",
+    "page": "https://unsplash.com/photos/a-view-of-a-mountain-range-with-a-lake-in-the-foreground-ok1KivJHzB4",
+    "author": "Lisha Riabinina",
+    "description": "Lake Como, Italy",
+    "license": "https://unsplash.com/license",
+    "source": "https://images.unsplash.com/photo-1719888471663-5fb90793af11?w=1600&q=82&fit=crop&fm=jpg",
+    "bytes": 154002
+  },
+  {
+    "file": "barcelona.jpg",
+    "page": "https://unsplash.com/photos/city-buildings-are-bathed-in-warm-sunlight-FyJWRub_o9E",
+    "author": "Yevhenii Dubrovskyi",
+    "description": "Barcelona, Spain",
+    "license": "https://unsplash.com/license",
+    "source": "https://images.unsplash.com/photo-1743499208851-de473299f8bf?w=1100&q=82&fit=crop&fm=jpg",
+    "bytes": 271514
+  },
+  {
+    "file": "hotel-pool.jpg",
+    "page": "https://unsplash.com/photos/swimming-pool-near-palm-trees-during-daytime-D1yT791Nf9A",
+    "author": "Cory Bjork",
+    "description": "Mission Bay Resort, San Diego",
+    "license": "https://unsplash.com/license",
+    "source": "https://images.unsplash.com/photo-1623718649591-311775a30c43?w=1000&q=82&fit=crop&fm=jpg",
+    "bytes": 193837
+  }
+]

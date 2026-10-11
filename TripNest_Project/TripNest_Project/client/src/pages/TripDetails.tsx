@@ -110,12 +110,18 @@ export default function TripDetails() {
                 >
                   Open cost planner
                 </button>
-                <Link className="secondary-button trip-link" to="/services">
+                <button
+                  className="secondary-button trip-link"
+                  onClick={() => openAccountTrip(trip.id, '/services')}
+                >
                   Explore services
-                </Link>
-                <Link className="secondary-button trip-link" to="/readiness">
+                </button>
+                <button
+                  className="secondary-button trip-link"
+                  onClick={() => openAccountTrip(trip.id, '/readiness')}
+                >
                   Travel readiness
-                </Link>
+                </button>
               </div>
             )}
           </section>
@@ -134,7 +140,9 @@ export default function TripDetails() {
                 <li key={b.id}>
                   <Link to={'/bookings/' + b.id}>{b.serviceName || b.reference}</Link>
                   <span>
-                    {b.status} · {money(b.totalMinor / 100)}
+                    {b.status === 'cancelled'
+                      ? `Cancelled · Refunded ${money(b.refundedMinor / 100)} · Remaining cost ${money((b.totalMinor - b.refundedMinor) / 100)}`
+                      : `Confirmed · ${money(b.totalMinor / 100)}`}
                   </span>
                 </li>
               ))}

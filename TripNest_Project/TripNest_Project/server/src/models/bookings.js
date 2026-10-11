@@ -34,6 +34,10 @@ export function createBookingsModel(db) {
       );
     }
 
+    if (filters.city) {
+      addCondition((p) => `city = ${p}`, filters.city);
+    }
+
     if (filters.origin) {
       addCondition((p) => `attributes->>'origin' = ${p}`, filters.origin);
     }
@@ -95,6 +99,7 @@ export function createBookingsModel(db) {
   async function listServiceFacets(category) {
     const { rows } = await db.query(
       `SELECT
+       city,
        attributes->>'origin' AS origin,
        attributes->>'destination' AS destination,
        attributes->>'coverage' AS coverage,

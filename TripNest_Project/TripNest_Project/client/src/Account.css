@@ -1,4 +1,215 @@
 /* Madin Abed: account access and personal trip management. */
+.account-entry-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.account-login-link {
+  color: #245c48;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.account-login-link:hover {
+  text-decoration: underline;
+}
+.account-menu {
+  position: relative;
+  z-index: 60;
+}
+.account-menu-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px 5px 5px;
+  border: 1px solid #d8e3d5;
+  border-radius: 40px;
+  background: #fff;
+  color: #245c48;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.account-toggle-label {
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-avatar,
+.profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #245c48;
+  color: #fff;
+  font-weight: 700;
+}
+.account-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: min(290px, calc(100vw - 32px));
+  padding: 12px;
+  background: #fffef8;
+  border: 1px solid #d8e3d5;
+  border-radius: 20px;
+  box-shadow: 0 16px 55px #173c3924;
+  text-align: left;
+}
+.account-popover-person {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px 16px;
+  border-bottom: 1px solid #e5eadf;
+  margin-bottom: 8px;
+}
+.account-popover-person span {
+  color: #5b7164;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.account-popover-person small {
+  color: #245c48;
+  font-size: 11px;
+  font-weight: 700;
+}
+.account-popover > a,
+.account-popover > button {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #244b3d;
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.account-popover > a:hover,
+.account-popover > button:hover {
+  background: #edf3e6;
+}
+.account-popover > .account-signout {
+  color: #a1402f;
+}
+.account-logout-error {
+  font-size: 12px;
+  padding: 10px;
+  background: #fff1ea;
+  border-radius: 10px;
+  color: #88392c;
+}
+.account-logout-error button {
+  font: inherit;
+  color: inherit;
+  border: 1px solid #e7c8bb;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+.auth-card .auth-show-password {
+  flex-direction: row;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+}
+.auth-card .auth-show-password input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: #245c48;
+}
+.auth-demo-note {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e4ebdf;
+}
+.profile-heading {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.profile-avatar {
+  flex-shrink: 0;
+  width: 82px;
+  height: 82px;
+  font-size: 28px;
+}
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+}
+.profile-page label {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0;
+  font-weight: 600;
+}
+.profile-page input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border: 1px solid #ceddce;
+  border-radius: 12px;
+  font: inherit;
+  color: #244b3d;
+}
+.profile-page input[readonly] {
+  background: #f3f5ee;
+  color: #657369;
+}
+.profile-links .trip-link {
+  display: block;
+  margin: 14px 0;
+}
+.profile-links p {
+  line-height: 1.7;
+}
+.site-signed-out {
+  margin: 0 auto 16px;
+  width: min(1200px, 90%);
+  padding: 12px 16px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  color: #245c48;
+  background: #e6f0e0;
+  font-size: 13px;
+}
+@media (max-width: 700px) {
+  .account-entry-links {
+    gap: 12px;
+  }
+  .account-entry-links .site-button {
+    padding: 12px 16px;
+    font-size: 11px;
+  }
+  .app-tools .account-entry-links .site-button {
+    display: none;
+  }
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .profile-heading {
+    gap: 16px;
+  }
+  .profile-avatar {
+    width: 54px;
+    height: 54px;
+    font-size: 20px;
+  }
+}
 .account-workspace,
 .auth-card {
   max-width: 1100px;

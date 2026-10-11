@@ -26,6 +26,7 @@ export default function Trips() {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
+  const [confirmArchive, setConfirmArchive] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const [message, setMessage] = useState(
     new URLSearchParams(location.search).has('saved')
@@ -164,13 +165,6 @@ export default function Trips() {
   }
 
   async function changeStatus(trip: Trip) {
-    if (
-      trip.status === 'active' &&
-      !window.confirm(
-        'Archive this trip? Saved bookings and expenses are kept. You can restore it later.',
-      )
-    )
-      return;
     setBusy(true);
     setError('');
     try {
@@ -206,6 +200,7 @@ export default function Trips() {
                 required
                 minLength={2}
                 maxLength={120}
+                aria-label="Trip name"
                 value={form.name}
                 aria-invalid={Boolean(fieldErrors.name)}
                 aria-describedby={fieldErrors.name ? 'trip-name-error' : undefined}
@@ -223,6 +218,7 @@ export default function Trips() {
                 required
                 minLength={2}
                 maxLength={160}
+                aria-label="Destination"
                 value={form.destination}
                 aria-invalid={Boolean(fieldErrors.destination)}
                 aria-describedby={
@@ -240,6 +236,7 @@ export default function Trips() {
               Start date
               <input
                 type="date"
+                aria-label="Start date"
                 value={form.startDate}
                 aria-invalid={Boolean(fieldErrors.startDate)}
                 aria-describedby={
@@ -257,6 +254,7 @@ export default function Trips() {
               End date
               <input
                 type="date"
+                aria-label="End date"
                 value={form.endDate}
                 min={form.startDate || undefined}
                 aria-invalid={Boolean(fieldErrors.endDate)}
@@ -277,6 +275,7 @@ export default function Trips() {
                 max="20"
                 step="1"
                 required
+                aria-label="Travelers"
                 value={form.travelerCount}
                 aria-invalid={Boolean(fieldErrors.travelerCount)}
                 aria-describedby={
@@ -298,6 +297,7 @@ export default function Trips() {
                 max="1000000"
                 step="0.01"
                 required
+                aria-label="Planned budget (EUR)"
                 value={form.budgetAmount}
                 aria-invalid={Boolean(fieldErrors.budgetAmount)}
                 aria-describedby={
@@ -315,6 +315,7 @@ export default function Trips() {
               Notes
               <textarea
                 maxLength={4000}
+                aria-label="Notes"
                 value={form.notes}
                 aria-invalid={Boolean(fieldErrors.notes)}
                 aria-describedby={fieldErrors.notes ? 'trip-notes-error' : undefined}
@@ -427,11 +428,43 @@ export default function Trips() {
                 <button
                   className="danger-button"
                   disabled={busy}
-                  onClick={() => void changeStatus(trip)}
+                  onClick={() =>
+                    trip.status === 'active'
+                      ? setConfirmArchive(trip.id)
+                      : void changeStatus(trip)
+                  }
                 >
                   {trip.status === 'active' ? 'Archive' : 'Restore'}
                 </button>
               </div>
+              {confirmArchive === trip.id && (
+                <div
+                  className="archive-confirmation"
+                  role="group"
+                  aria-label={'Archive ' + trip.name}
+                >
+                  <p>
+                    Archive this trip? Saved bookings and expenses stay available. You can
+                    restore it later.
+                  </p>
+                  <div className="card-actions">
+                    <button
+                      className="danger-button"
+                      disabled={busy}
+                      onClick={() => void changeStatus(trip)}
+                    >
+                      Yes, archive trip
+                    </button>
+                    <button
+                      className="secondary-button"
+                      disabled={busy}
+                      onClick={() => setConfirmArchive(null)}
+                    >
+                      Keep trip active
+                    </button>
+                  </div>
+                </div>
+              )}
             </article>
           ))}
       </section>

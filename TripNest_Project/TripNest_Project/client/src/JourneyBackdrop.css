@@ -1,0 +1,165 @@
+.home-road-site {
+  position: relative;
+  isolation: isolate;
+}
+
+.journey-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.journey-background-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.home-road-site > .discovery-main,
+.home-road-site > .site-footer,
+.home-road-site > .site-signed-out {
+  position: relative;
+  z-index: 1;
+}
+
+.home-road-site > .site-header {
+  position: relative;
+  z-index: 20;
+}
+
+/* #explain_notes: Road edges, lanes and location pins make this a small map.
+   The road stays in the gutter so the page content remains easy to read. */
+.journey-route,
+.journey-route-trail,
+.journey-road-surface,
+.journey-road-lanes,
+.journey-map-streets {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.journey-route {
+  stroke: #a5b799;
+  stroke-width: 10;
+  opacity: 0.7;
+}
+
+.journey-road-surface {
+  stroke: #e9eee0;
+  stroke-width: 7;
+}
+
+.journey-road-lanes {
+  stroke: #81936e;
+  stroke-width: 1.2;
+  stroke-dasharray: 5 9;
+  opacity: 0.7;
+}
+
+.journey-map-streets {
+  stroke: #a5b799;
+  stroke-width: 2;
+  opacity: 0.25;
+}
+
+.journey-map-stop path {
+  fill: #61836d;
+  stroke: #f7f7f0;
+  stroke-width: 1;
+}
+
+.journey-map-stop circle {
+  fill: #eef1e5;
+}
+
+.journey-map-stop text {
+  fill: #526f5e;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+
+.journey-route-trail {
+  stroke: #a68b4b;
+  stroke-width: 2;
+  stroke-dasharray: 0 1;
+  opacity: 0.65;
+}
+
+.journey-route-traveler {
+  r: 4.5;
+  fill: #b09250;
+  stroke: #fff8e2;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 4px #b0925055);
+}
+
+:root[data-theme='dark'] .journey-route {
+  stroke: #72967e;
+  opacity: 0.5;
+}
+
+:root[data-theme='dark'] .journey-road-surface {
+  stroke: #20382c;
+}
+
+:root[data-theme='dark'] .journey-road-lanes {
+  stroke: #a4b295;
+}
+
+:root[data-theme='dark'] .journey-map-streets {
+  stroke: #83ad90;
+}
+
+:root[data-theme='dark'] .journey-map-stop path {
+  fill: #9dbb9a;
+  stroke: #0d1817;
+}
+
+:root[data-theme='dark'] .journey-map-stop circle {
+  fill: #20382c;
+}
+
+:root[data-theme='dark'] .journey-map-stop text {
+  fill: #a8bea8;
+}
+
+:root[data-theme='dark'] .journey-route-trail {
+  stroke: #dfc681;
+  opacity: 0.6;
+}
+
+:root[data-theme='dark'] .journey-route-traveler {
+  fill: #e2cb83;
+  stroke: #20332d;
+  filter: drop-shadow(0 0 4px #e2cb8340);
+}
+
+@media (max-width: 700px) {
+  .journey-route {
+    stroke-width: 7;
+  }
+  .journey-road-surface {
+    stroke-width: 4.5;
+  }
+  .journey-route-trail,
+  .journey-road-lanes {
+    stroke-width: 1.5;
+  }
+  .journey-map-stop text {
+    display: none;
+  }
+  .journey-route-traveler {
+    r: 3.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-route-trail,
+  .journey-route-traveler {
+    display: none;
+  }
+}

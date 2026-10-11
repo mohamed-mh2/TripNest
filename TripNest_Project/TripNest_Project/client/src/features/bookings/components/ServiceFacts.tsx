@@ -40,6 +40,7 @@ export function serviceFacts(service: TravelService): string[] {
         a.transferType || '',
         `${a.origin} → ${a.destination}`,
         a.vehicleCapacity ? `Up to ${a.vehicleCapacity} passengers per vehicle` : '',
+        a.pickupTime ? `Pickup ${a.pickupTime} (UTC)` : '',
         a.validityHours ? `Valid ${a.validityHours} hours` : '',
       ].filter(Boolean);
 

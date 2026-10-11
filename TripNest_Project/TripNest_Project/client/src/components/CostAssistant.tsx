@@ -406,9 +406,9 @@ export default function CostAssistant({ open, onClose, savedTrip }: Props) {
               ))}
             </div>
             <p className="assistant-note">
-              Categories already in your plan start unchecked. When bookings exist, return
-              travel and accommodation also start unchecked; check them only for
-              additional costs.
+              Costs covered by your saved estimates or confirmed bookings start unchecked.
+              Check them only for additional, uncovered costs. Cancelled bookings do not
+              cover a future service.
             </p>
             <div className="assistant-actions">
               <button className="assistant-secondary" onClick={() => setStep(1)}>

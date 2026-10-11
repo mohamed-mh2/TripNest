@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import TravelSupport from './TravelSupport';
 import CashPackages from './CashPackages';
 import './TravelFunds.css';
+import { useLocation } from 'react-router-dom';
 
 export default function TravelFunds({ visible }: { visible: boolean }) {
+  const route = useLocation();
   const [tab, setTab] = useState<'support' | 'cash'>(() =>
     location.hash === '#cash' ? 'cash' : 'support',
   );
@@ -16,9 +18,8 @@ export default function TravelFunds({ visible }: { visible: boolean }) {
       )
         setTab('support');
     };
-    window.addEventListener('hashchange', openShared);
-    return () => window.removeEventListener('hashchange', openShared);
-  }, []);
+    openShared();
+  }, [route.hash]);
 
   function chooseTab(next: typeof tab) {
     setTab(next);

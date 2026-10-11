@@ -25,6 +25,7 @@ interface BookingsState {
 }
 
 export const DEFAULT_FILTERS: ServiceFilters = {
+  city: '',
   q: '',
   origin: '',
   destination: '',

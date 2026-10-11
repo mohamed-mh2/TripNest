@@ -60,7 +60,10 @@ export default function AccountBootstrap({
         if (!active) return;
         if (e instanceof ApiError && e.status === 401) {
           clearAccountSession();
-          window.location.replace('/auth?expired=1');
+          window.location.replace(
+            '/auth?expired=1&returnTo=' +
+              encodeURIComponent(location.pathname + location.search + location.hash),
+          );
           return;
         }
         setState((s) => ({
@@ -85,7 +88,10 @@ export default function AccountBootstrap({
       } catch (e) {
         if (e instanceof ApiError && e.status === 401) {
           clearAccountSession();
-          window.location.replace('/auth?expired=1');
+          window.location.replace(
+            '/auth?expired=1&returnTo=' +
+              encodeURIComponent(location.pathname + location.search + location.hash),
+          );
         }
       } finally {
         checking = false;

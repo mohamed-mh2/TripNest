@@ -35,6 +35,7 @@ function OptionSelect(props: {
     <label className="field">
       <span className="field__label">{props.label}</span>
       <select
+        aria-label={props.label}
         value={props.value}
         onChange={(event) => props.onChange(event.target.value)}
       >
@@ -104,10 +105,21 @@ export function ServiceFiltersPanel({
         </>
       )}
 
+      {!isTransport && (
+        <OptionSelect
+          label="City"
+          value={filters.city}
+          options={facets?.cities || []}
+          anyLabel="Any city"
+          onChange={(city) => onChange({ city })}
+        />
+      )}
+
       {category === 'hotel' && (
         <label className="field">
           <span className="field__label">Hotel class</span>
           <select
+            aria-label="Hotel class"
             value={filters.minStars}
             onChange={(event) => onChange({ minStars: event.target.value })}
           >
@@ -131,6 +143,7 @@ export function ServiceFiltersPanel({
           <label className="field">
             <span className="field__label">Data</span>
             <select
+              aria-label="Data"
               value={filters.minDataGb}
               onChange={(event) => onChange({ minDataGb: event.target.value })}
             >
@@ -169,6 +182,7 @@ export function ServiceFiltersPanel({
       <label className="field">
         <span className="field__label">Rating</span>
         <select
+          aria-label="Rating"
           value={filters.minRating}
           onChange={(event) => onChange({ minRating: event.target.value })}
         >
@@ -181,6 +195,7 @@ export function ServiceFiltersPanel({
       <label className="field">
         <span className="field__label">Sort by</span>
         <select
+          aria-label="Sort by"
           value={filters.sort}
           onChange={(event) => onChange({ sort: event.target.value as ServiceSort })}
         >

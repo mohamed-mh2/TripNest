@@ -29,6 +29,7 @@ test(
     try {
       for (const file of [
         'development.sql',
+        'budget.sql',
         'bookings.sql',
         'support.sql',
         'support.sql',
@@ -255,6 +256,10 @@ test(
       assert.match(response.text, /Saved Barcelona trip/);
       assert.match(response.text, /Barcelona/);
       assert.match(response.text, /TN-HELP-TEST/);
+      assert.match(response.text, /Confirmed itinerary/);
+      assert.match(response.text, /Trip cost plan/);
+      assert.match(response.text, /€1,600.00/);
+      assert.match(response.text, /€1,561.00/);
       assert.doesNotMatch(response.text, /TN-DEMO-FLIGHT|Lisbon long weekend/);
       await db.query('UPDATE sessions SET revoked_at=now() WHERE id=$1', [sessions[0]]);
       assert.equal((await call(0, 'get', '/tickets')).status, 401);

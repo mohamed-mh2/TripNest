@@ -34,7 +34,7 @@ export async function apiRequest<T>(
   if (
     path.startsWith('/bookings') ||
     path.startsWith('/trips') ||
-    ['/auth/me', '/auth/logout'].includes(path)
+    ['/auth/me', '/auth/logout', '/auth/profile'].includes(path)
   ) {
     const session = await getFinanceSession('traveler');
     headers.Authorization = 'Bearer ' + financeAccessToken(session.token);

@@ -108,6 +108,7 @@ export function bookingRoutes(db, secret) {
       category: query.category,
       sort: query.sort,
       q: readOptionalText(query, 'q', errors),
+      city: readOptionalText(query, 'city', errors),
       origin: readOptionalText(query, 'origin', errors),
       destination: readOptionalText(query, 'destination', errors),
       coverage: readOptionalText(query, 'coverage', errors),
