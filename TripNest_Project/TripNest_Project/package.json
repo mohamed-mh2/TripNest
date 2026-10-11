@@ -2,9 +2,13 @@
   "name": "tripnest-project",
   "private": true,
   "version": "0.1.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "dev": "node scripts/start-dev.cjs",
     "build": "npm --prefix client run build",
+    "start": "npm --prefix server start",
     "dev:background": "node scripts/start-dev.cjs --background"
   }
 }

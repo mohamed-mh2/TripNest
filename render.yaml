@@ -1,0 +1,43 @@
+# Free academic demonstration. Render's free PostgreSQL expires after 30 days.
+services:
+  - type: web
+    name: tripnest
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    rootDir: TripNest_Project/TripNest_Project
+    buildCommand: npm ci --prefix client --include=dev && npm ci --prefix server --omit=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_VERSION
+        value: '24'
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: DEMO_MODE
+        value: 'false'
+      - key: AUTO_MIGRATE
+        value: 'true'
+      - key: TRUST_PROXY
+        value: '1'
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_SETUP_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tripnest-db
+          property: connectionString
+databases:
+  - name: tripnest-db
+    plan: free
+    region: frankfurt
+    databaseName: tripnest
+    user: tripnest
+    ipAllowList: []

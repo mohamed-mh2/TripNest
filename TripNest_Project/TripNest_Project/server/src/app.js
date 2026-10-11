@@ -1,4 +1,5 @@
 import express from 'express';
+import { resolve, extname } from 'node:path';
 import jwt from 'jsonwebtoken';
 import { requireSession } from './middleware/auth.js';
 import { financeRoutes } from './routes/finance.js';
@@ -7,11 +8,21 @@ import { supportRoutes } from './routes/support.js';
 import { authRoutes } from './routes/auth.js';
 import { tripsRoutes } from './routes/trips.js';
 
-export function createApp(db, { secret, demo = false }) {
+export function createApp(
+  db,
+  { secret, demo = false, staticDirectory = null, trustProxy = false },
+) {
   if (!secret || secret.length < 32)
     throw new Error('JWT_SECRET must contain at least 32 characters.');
   const app = express();
   app.disable('x-powered-by');
+  if (trustProxy) app.set('trust proxy', 1);
+  app.use((req, res, next) => {
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    if (req.path.startsWith('/api/')) res.set('Cache-Control', 'no-store');
+    next();
+  });
   app.use(express.json({ limit: '32kb' }));
   app.get('/api/health', async (req, res, next) => {
     try {
@@ -97,6 +108,22 @@ export function createApp(db, { secret, demo = false }) {
   app.use('/api/help', supportRoutes(db, secret));
   app.use('/api', bookingRoutes(db, secret));
   app.use('/api', requireSession(db, secret), financeRoutes(db, secret));
+  if (staticDirectory) {
+    app.use(express.static(staticDirectory, { index: false, dotfiles: 'deny' }));
+    // #explain_notes: Deep links such as /trips/ID open React; unknown API routes
+    // and missing asset files keep their error responses instead of returning HTML.
+    app.use((req, res, next) => {
+      if (
+        !['GET', 'HEAD'].includes(req.method) ||
+        /^\/api(?:\/|$)/.test(req.path) ||
+        extname(req.path) ||
+        !req.accepts('html')
+      )
+        return next();
+      res.set('Cache-Control', 'no-cache');
+      res.sendFile(resolve(staticDirectory, 'index.html'));
+    });
+  }
   app.use((req, res) => res.status(404).json({ error: 'Route not found.' }));
   app.use((error, req, res, next) => {
     const status = error.status ?? (error.code === '23505' ? 409 : 500);
